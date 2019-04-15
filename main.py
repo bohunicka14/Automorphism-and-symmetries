@@ -15,8 +15,16 @@ class Node(object):
 
 
 class Graph():
-    def __init__(self):
-        self.g = dict()
+    def __init__(self, graph=dict()):
+        self.g = graph
+
+    def __str__(self):
+        return self.g
+
+    def _print(self):
+        for key, value in self.g.items():
+            print(key)
+            print(value)
 
     def add_edge(self, v1, v2):
         if self.g.get(v1, None) is not None:
@@ -43,6 +51,13 @@ class Graph():
             return adjacent
         return None
 
+    def get_copy(self):
+        copy = dict(self.g)
+        return copy
+
+    def number_of_vertices(self):
+        return len(self.g)
+
     def prufer_code(self):
         copy = dict(self.g)
         result = ''
@@ -52,8 +67,18 @@ class Graph():
                 if self.is_leaf(vertex, copy):
                     result += str(self.del_leaf(vertex, copy))
                     break
-
         return result
+
+def generate_graph(base):
+    result = []
+    for graph in base:
+        size = graph.number_of_vertices()
+        for vertex in graph.g:
+            g = Graph(graph.get_copy())
+            g.add_edge(vertex, size + 1)
+            result.append(g)
+
+    return result
 
 
 if __name__ == '__main__':
@@ -65,6 +90,16 @@ if __name__ == '__main__':
     g.add_edge(5, 6)
 
     print(g.prufer_code())
+
+    ## generating graph
+    # test = Graph()
+    # test.add_edge(1,2)
+    # graphs = generate_graph([test])
+    # for graph in graphs:
+    #     graph._print()
+    #     print('============')
+
+
 
 
 
