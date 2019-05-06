@@ -1,6 +1,7 @@
 import random
-import numpy
-import matplotlib.pyplot as plt
+import copy
+# import numpy
+# import matplotlib.pyplot as plt
 
 class Node(object):
     def __init__(self, value):
@@ -50,6 +51,12 @@ class Graph(object):
             result.append(len(node.edges))
         result.sort(reverse=True)
         return result
+
+    def check_k_regularity(self, k):
+        for node in self.nodes:
+            if node.degree() != k:
+                return False
+        return True
 
     def insert_node(self, new_node_val):
         "Insert a new node with value new_node_val"
@@ -230,6 +237,7 @@ class Graph(object):
         """Return the results of bfs with numbers converted to names."""
         return [self.node_names[num] for num in self.bfs(start_node_num)]
 
+
     def node_degree(self, node_val):
         for node in self.nodes:
             if node.value == node_val:
@@ -277,6 +285,32 @@ class Graph(object):
                 if unvisited_ingoing_edge(node, e):
                     enqueue(e.node_from, dist + 1)
         return -1
+
+    def is_path(self):
+        degree1 = 0
+        degree2 = 0
+        for node in self.nodes:
+            if node.degree() == 1:
+                degree1 += 1
+            elif node.degree() == 2:
+                degree2 += 1
+            else:
+                return False
+
+        if degree1 == 2:
+            return True
+
+    def is_star(self):
+        degree1 = 0
+        middle_degree = 0
+        for node in self.nodes:
+            if node.degree() == 1:
+                degree1 += 1
+            else:
+                middle_degree = node.degree()
+        return degree1 == len(self.nodes)-1 and middle_degree == len(self.nodes)-1
+
+
 
     def is_bipartite(self, src):
         # Create a color array to store colors
@@ -330,189 +364,77 @@ class Graph(object):
         # color
         return True
 
-def generate_random_set(input):
-    input_set = input.copy()
-    length = len(input)//2
-    result_set = set()
-    while len(result_set) != length:
-        item = random.sample(input_set, 1)[0]
-        input_set.remove(item)
-        result_set.add(item)
-
-    return result_set
-
-def graph_generation_method1_helper():
-    graph = Graph()
-    for i in range(1, 40):
-        graph.insert_edge(1, i, i+1)
-    graph.insert_edge(1, 40, 1)
-
-    full_set = {i for i in range(1, 41)}
-    half_set1 = generate_random_set(full_set)
-    half_set2 = full_set.difference(half_set1)
-
-    half_set1 = list(half_set1)
-    half_set2 = list(half_set2)
-
-    wrong_decisions = []
-    for i in range(len(half_set1)):
-        if abs(half_set1[i] - half_set2[i]) == 1:
-            wrong_decisions.extend([half_set1[i], half_set2[i]])
-        else:
-            graph.insert_edge(1, half_set1[i], half_set2[i])
-
-    for i in range(len(wrong_decisions)//2):
-        graph.insert_edge(1, wrong_decisions[i], wrong_decisions[i + len(wrong_decisions)//2])
-
-    return graph
-
-def check_3_regularity(graph):
-    for node in graph.nodes:
-        if node.degree() != 3:
+    def is_isomorphic(self, g):
+        if self.number_of_nodes() != g.number_of_nodes():
             return False
-    return True
+        if self.number_of_edges() != g.number_of_edges():
+            return False
+        if self.number_of_leaves() != g.number_of_leaves():
+            return False
+        if self.degree_sequence() != g.degree_sequence():
+            return False
+        # todo: add other tests
 
-def graph_generation_method1():
-    graph = graph_generation_method1_helper()
-    while not check_3_regularity(graph):
-        graph = graph_generation_method1_helper()
+        return True
 
-    # for node in graph.nodes:
-    #     if node.degree() != 3:
-    #         print(node.value)
-    return graph
+class GraphGenerator():
+
+    def __init__(self, number_of_nodes):
+        self.n = number_of_nodes
+
+    def generate_star(self):
+        g = Graph()
+        for i in range(1, self.n):
+            g.insert_edge(1, 0, i)
+        return g
+
+    def generate_path(self):
+        g = Graph()
+        for i in range(self.n - 1):
+            g.insert_edge(1, i, i + 1)
+        return g
+
+    def create_all_graphs_by_adding_new_edge(self, graph):
+        output = []
+        num = graph.number_of_nodes()
+        for i in range(num):
+            new_graph = copy.deepcopy(graph)
+            new_graph.insert_edge(0, i, num+i)
+            if not self.check_isomorphism(new_graph, output):
+                output.append(new_graph)
+
+        return output
+
+    def generate_graphs(self, graphs):
+        output = []
+        for g in graphs:
+            output.append(self.create_all_graphs_by_adding_new_edge(g))
+
+        return output
 
 
-def graph_generation_method2():
-    graph = Graph()
-    ## first cycle
-    for i in range(1, 20):
-        graph.insert_edge(1, i, i+1)
-    graph.insert_edge(1, 1, 20)
-
-    ## second cycle
-    for i in range(21, 40):
-        graph.insert_edge(1, i, i+1)
-    graph.insert_edge(1, 40, 21)
-
-    second_half = numpy.random.permutation([i for i in range(21, 41)])
-    for i in range(1, 21):
-        graph.insert_edge(1, i, second_half[i-1])
-
-    # for node in graph.nodes:
-    #     if node.degree() != 3:
-    #         print(node.degree())
-
-    return graph
-
+    def check_isomorphism(self, graph, graphs = []):
+        for g in graphs:
+            if graph.is_isomorphic(g):
+                return True
+        return False
 
 if __name__ == '__main__':
-    g1 = graph_generation_method1()
-    g2 = graph_generation_method2()
+    # 4 vertices graphs
+    # g1 = Graph()
+    # g2 = Graph()
+    #
+    # g1.insert_edge(0, 0, 1)
+    # g1.insert_edge(0, 1, 2)
+    # g1.insert_edge(0, 2, 3)
+    #
+    # g2.insert_edge(0, 0, 1)
+    # g2.insert_edge(0, 0, 2)
+    # g2.insert_edge(0, 0, 3)
 
-    print('G1 bipartite: ', g1.is_bipartite(1))
-    print('G2 bipartite: ', g2.is_bipartite(1))
-    print('G1 average distance: ', g1.average_distance())
-    print('G2 average distance: ', g2.average_distance())
+    gn = GraphGenerator(4)
+    path = gn.generate_path()
+    star = gn.generate_star()
+    out = gn.generate_graphs([path, star])
+    print(len(out[0]), len(out[1]))
 
-    fig, ax = plt.subplots()
-    for i in range(100):
-        g1 = graph_generation_method1()
-        if g1.is_bipartite(1):
-            c = 'red'
-        else:
-            c = 'green'
-        ax.scatter(i, g1.average_distance(), c=c, marker='o')
-
-    for i in range(100):
-        g2 = graph_generation_method2()
-        if g2.is_bipartite(1):
-            c = 'black'
-        else:
-            c = 'blue'
-        ax.scatter(i, g2.average_distance(), c=c, marker='s')
-    plt.show()
-
-
-    # g = Graph()
-    # g.insert_edge(1, 0, 1)
-    # g.insert_edge(1, 1, 2)
-    # g.insert_edge(1, 2, 3)
-    # g.insert_edge(1, 3, 4)
-    # g.insert_edge(1, 4, 5)
-    # g.insert_edge(1, 5, 0)
-    # print(g.average_distance())
-
-# graph = Graph()
-#
-# print(graph.insert_edge(0, 0, 1))
-# print(graph.insert_edge(0, 1, 0)) # retuns False
-# print(graph.insert_edge(0, 0, 2))
-# print(graph.insert_edge(0, 2, 3))
-# print(graph.insert_edge(0, 2, 4))
-# print(graph.number_of_nodes() - graph.number_of_edges() == 1)
-# print(graph.number_of_leaves())
-# print(graph.degree_sequence())
-
-
-# graph.set_node_names(('Mountain View',  # 0
-#                       'San Francisco',  # 1
-#                       'London',  # 2
-#                       'Shanghai',  # 3
-#                       'Berlin',  # 4
-#                       'Sao Paolo',  # 5
-#                       'Bangalore'))  # 6
-#
-# graph.insert_edge(51, 0, 1)  # MV <-> SF
-# graph.insert_edge(51, 1, 0)  # SF <-> MV
-# graph.insert_edge(9950, 0, 3)  # MV <-> Shanghai
-# graph.insert_edge(9950, 3, 0)  # Shanghai <-> MV
-# graph.insert_edge(10375, 0, 5)  # MV <-> Sao Paolo
-# graph.insert_edge(10375, 5, 0)  # Sao Paolo <-> MV
-# graph.insert_edge(9900, 1, 3)  # SF <-> Shanghai
-# graph.insert_edge(9900, 3, 1)  # Shanghai <-> SF
-# graph.insert_edge(9130, 1, 4)  # SF <-> Berlin
-# graph.insert_edge(9130, 4, 1)  # Berlin <-> SF
-# graph.insert_edge(9217, 2, 3)  # London <-> Shanghai
-# graph.insert_edge(9217, 3, 2)  # Shanghai <-> London
-# graph.insert_edge(932, 2, 4)  # London <-> Berlin
-# graph.insert_edge(932, 4, 2)  # Berlin <-> London
-# graph.insert_edge(9471, 2, 5)  # London <-> Sao Paolo
-# graph.insert_edge(9471, 5, 2)  # Sao Paolo <-> London
-# # (6) 'Bangalore' is intentionally disconnected (no edges)
-# # for this problem and should produce None in the
-# # Adjacency List, etc.
-#
-# import pprint
-#
-# pp = pprint.PrettyPrinter(indent=2)
-#
-# print
-# "Edge List"
-# pp.pprint(graph.get_edge_list_names())
-#
-# print
-# "\nAdjacency List"
-# pp.pprint(graph.get_adjacency_list_names())
-#
-# print
-# "\nAdjacency Matrix"
-# pp.pprint(graph.get_adjacency_matrix())
-#
-# print
-# "\nDepth First Search"
-# pp.pprint(graph.dfs_names(2))
-#
-# # Should print:
-# # Depth First Search
-# # ['London', 'Shanghai', 'Mountain View', 'San Francisco', 'Berlin', 'Sao Paolo']
-#
-# print
-# "\nBreadth First Search"
-# pp.pprint(graph.bfs_names(2))
-# # test error reporting
-# # pp.pprint(['Sao Paolo', 'Mountain View', 'San Francisco', 'London', 'Shanghai', 'Berlin'])
-#
-# # Should print:
-# # Breadth First Search
-# # ['London', 'Shanghai', 'Berlin', 'Sao Paolo', 'Mountain View', 'San Francisco']
