@@ -12,6 +12,9 @@ class Node(object):
     def degree(self):
         return len(self.edges)
 
+    def is_leaf(self):
+        return len(self.edges) == 1
+
 
 class Edge(object):
     def __init__(self, value, node_from, node_to):
@@ -48,7 +51,17 @@ class Graph(object):
     def degree_sequence(self):
         result = []
         for node in self.nodes:
-            result.append(len(node.edges))
+            result.append(node.degree())
+        result.sort(reverse=True)
+        return result
+
+    def leaf_sequence(self):
+        result = []
+        for node in self.nodes:
+            if node.is_leaf():
+                node_to = node.edges[0].node_to if node.edges[0].node_to != node else node.edges[0].node_from
+                result.append(node_to.degree())
+
         result.sort(reverse=True)
         return result
 
@@ -78,6 +91,7 @@ class Graph(object):
         node_from = nodes[node_from_val]
         node_to = nodes[node_to_val]
 
+        # checking if opposite edge exists
         for edge in node_from.edges:
             if edge.node_to == node_from and edge.node_from == node_to:
                 return False
@@ -373,6 +387,8 @@ class Graph(object):
             return False
         if self.degree_sequence() != g.degree_sequence():
             return False
+        if self.leaf_sequence() != g.leaf_sequence():
+            return False
         # todo: add other tests
 
         return True
@@ -394,22 +410,27 @@ class GraphGenerator():
             g.insert_edge(1, i, i + 1)
         return g
 
-    def create_all_graphs_by_adding_new_edge(self, graph):
-        output = []
-        num = graph.number_of_nodes()
-        for i in range(num):
-            new_graph = copy.deepcopy(graph)
-            new_graph.insert_edge(0, i, num+i)
-            if not self.check_isomorphism(new_graph, output):
-                output.append(new_graph)
-
-        return output
+    # def create_all_graphs_by_adding_new_edge(self, graph):
+    #     output = []
+    #     num = graph.number_of_nodes()
+    #     for i in range(num):
+    #         new_graph = copy.deepcopy(graph)
+    #         new_graph.insert_edge(0, i, num+i)
+    #         if not self.check_isomorphism(new_graph, output):
+    #             output.append(new_graph)
+    #
+    #     return output
 
     def generate_graphs(self, graphs):
         output = []
         for g in graphs:
-            output.append(self.create_all_graphs_by_adding_new_edge(g))
-
+            # output.append(self.create_all_graphs_by_adding_new_edge(g))
+            num = g.number_of_nodes()
+            for i in range(num):
+                new_graph = copy.deepcopy(g)
+                new_graph.insert_edge(0, i, num + i)
+                if not self.check_isomorphism(new_graph, output):
+                    output.append(new_graph)
         return output
 
 
@@ -436,5 +457,9 @@ if __name__ == '__main__':
     path = gn.generate_path()
     star = gn.generate_star()
     out = gn.generate_graphs([path, star])
-    print(len(out[0]), len(out[1]))
+    for g in out:
+        print(g.leaf_sequence())
+    print(len(out))
+    out = gn.generate_graphs(out)
+    print(len(out))
 
