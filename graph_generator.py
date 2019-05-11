@@ -1,5 +1,7 @@
 import random
 import copy
+import tkinter
+from tkinter import *
 # import numpy
 # import matplotlib.pyplot as plt
 
@@ -401,6 +403,81 @@ class Graph(object):
         result += '--------------------------'
         return result
 
+    def get_level_nums(self):
+        vertex = self.nodes[0]
+        queue = [[vertex, 0, None]] # node, level, parent
+        table = {0: 1}
+        while queue:
+            item = queue.pop(0)
+            node, level, parent = item
+
+            for edge in node.edges:
+                if edge.node_from != parent and edge.node_to != parent:
+                    if edge.node_from != node:
+                        queue.append([edge.node_from, level+1, node])
+                    else:
+                        queue.append([edge.node_to, level+1, node])
+                    if level + 1 in table:
+                        table[level + 1] += 1
+                    else:
+                        table[level + 1] = 1
+
+        return table
+
+
+    def draw(self):
+        main = tkinter.Tk()
+        window_width = 1000
+        window_height = 600
+        drawing_width = window_width - 50
+        canvas = tkinter.Canvas(width=window_width, height=window_height)
+        canvas.pack()
+        offset_x = 50
+        offset_y = 50
+        pos_x = window_width/2
+        pos_y = 50
+
+        table = self.get_level_nums()
+        already_drawn_nodes_table = {}
+
+        for key in table.keys():
+            already_drawn_nodes_table[key] = 0
+
+        def draw_node(node, posx, posy, parent_x, parent_y):
+            canvas.create_oval(posx - 15, posy - 15, posx + 15, posy + 15)
+            canvas.create_text(posx, posy, text=str(node.value), font='helvetica 12 bold')
+            canvas.create_line(posx, posy, parent_x, parent_y)
+
+        queue = []
+        queue.append({'node': self.nodes[0], 'parent': None, 'posx': pos_x, 'posy': pos_y, 'parent_posx': pos_x,
+               'parent_posy': pos_y, 'level': 0})
+
+        while queue:
+            node = queue.pop(0)
+            draw_node(node['node'], node['posx'], node['posy'], node['parent_posx'], node['parent_posy'])
+
+            for edge in node['node'].edges:
+                if edge.node_from != node['parent'] and edge.node_to != node['parent']:
+                    posx = (drawing_width / table[node['level'] + 1]) * already_drawn_nodes_table[node['level'] + 1] \
+                           + offset_x
+                    posy = pos_y + offset_y * (node['level'] + 1)
+                    already_drawn_nodes_table[node['level'] + 1] += 1
+
+                    if edge.node_from != node['node']:
+                        node_to_enqueue = edge.node_from
+                    else:
+                        node_to_enqueue = edge.node_to
+
+                    queue.append({'node': node_to_enqueue,
+                                  'parent': node['node'],
+                                  'posx': posx,
+                                  'posy': posy,
+                                  'parent_posx': node['posx'],
+                                  'parent_posy': node['posy'],
+                                  'level': node['level']+1})
+
+        main.mainloop()
+
 
 
 class GraphGenerator():
@@ -458,21 +535,23 @@ if __name__ == '__main__':
     path = GraphGenerator.generate_path(4)
     star = GraphGenerator.generate_star(4)
     out = GraphGenerator.generate_isomorphic_graphs([path, star])
+    # # for g in out:
+    # #     print(g.leaf_sequence())
+    # print(len(out))
+    # print('5 vrcholove:')
     # for g in out:
-    #     print(g.leaf_sequence())
-    print(len(out))
-    print('5 vrcholove:')
+    #     print(g)
+    out = GraphGenerator.generate_isomorphic_graphs(out)
     for g in out:
-        print(g)
-    out = GraphGenerator.generate_isomorphic_graphs(out)
-    print('6 vrcholove')
-    for g in out:
-        print(g)
-    print(len(out))
-
-    out = GraphGenerator.generate_isomorphic_graphs(out)
-    print(len(out))
-
-    out = GraphGenerator.generate_isomorphic_graphs(out)
-    print(len(out))
+        g.draw()
+    # print('6 vrcholove')
+    # for g in out:
+    #     print(g)
+    # print(len(out))
+    #
+    # out = GraphGenerator.generate_isomorphic_graphs(out)
+    # print(len(out))
+    #
+    # out = GraphGenerator.generate_isomorphic_graphs(out)
+    # print(len(out))
 
