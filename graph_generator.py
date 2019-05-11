@@ -405,46 +405,38 @@ class Graph(object):
 
 class GraphGenerator():
 
-    def __init__(self, number_of_nodes):
-        self.n = number_of_nodes
-
-    def generate_star(self):
+    @staticmethod
+    def generate_star(n):
         g = Graph()
-        for i in range(1, self.n):
+        for i in range(1, n):
             g.insert_edge(1, 0, i)
         return g
 
-    def generate_path(self):
+    @staticmethod
+    def generate_path(n):
         g = Graph()
-        for i in range(self.n - 1):
+        for i in range(n - 1):
             g.insert_edge(1, i, i + 1)
         return g
 
-    # def create_all_graphs_by_adding_new_edge(self, graph):
-    #     output = []
-    #     num = graph.number_of_nodes()
-    #     for i in range(num):
-    #         new_graph = copy.deepcopy(graph)
-    #         new_graph.insert_edge(0, i, num+i)
-    #         if not self.check_isomorphism(new_graph, output):
-    #             output.append(new_graph)
-    #
-    #     return output
-
-    def generate_graphs(self, graphs):
+    @staticmethod
+    def generate_isomorphic_graphs(graphs):
         output = []
         for g in graphs:
-            # output.append(self.create_all_graphs_by_adding_new_edge(g))
             num = g.number_of_nodes()
             for i in range(num):
                 new_graph = copy.deepcopy(g)
                 new_graph.insert_edge(0, i, num)
-                if not self.check_isomorphism(new_graph, output):
+                if not GraphGenerator.check_isomorphism(new_graph, output):
                     output.append(new_graph)
         return output
 
+    @staticmethod
+    def generate_graph_permutations(self, graph):
+        pass
 
-    def check_isomorphism(self, graph, graphs = []):
+    @staticmethod
+    def check_isomorphism(graph, graphs=[]):
         for g in graphs:
             if graph.is_isomorphic(g):
                 return True
@@ -463,25 +455,24 @@ if __name__ == '__main__':
     # g2.insert_edge(0, 0, 2)
     # g2.insert_edge(0, 0, 3)
 
-    gn = GraphGenerator(4)
-    path = gn.generate_path()
-    star = gn.generate_star()
-    out = gn.generate_graphs([path, star])
+    path = GraphGenerator.generate_path(4)
+    star = GraphGenerator.generate_star(4)
+    out = GraphGenerator.generate_isomorphic_graphs([path, star])
     # for g in out:
     #     print(g.leaf_sequence())
     print(len(out))
     print('5 vrcholove:')
     for g in out:
         print(g)
-    out = gn.generate_graphs(out)
+    out = GraphGenerator.generate_isomorphic_graphs(out)
     print('6 vrcholove')
     for g in out:
         print(g)
     print(len(out))
 
-    out = gn.generate_graphs(out)
+    out = GraphGenerator.generate_isomorphic_graphs(out)
     print(len(out))
 
-    out = gn.generate_graphs(out)
+    out = GraphGenerator.generate_isomorphic_graphs(out)
     print(len(out))
 
