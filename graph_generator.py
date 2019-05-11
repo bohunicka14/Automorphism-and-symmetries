@@ -393,6 +393,16 @@ class Graph(object):
 
         return True
 
+    def __repr__(self):
+        result = ''
+        for edge in self.edges:
+            result += str(edge.node_from.value) + ' - ' + str(edge.node_to.value) + '\n'
+
+        result += '--------------------------'
+        return result
+
+
+
 class GraphGenerator():
 
     def __init__(self, number_of_nodes):
@@ -428,7 +438,7 @@ class GraphGenerator():
             num = g.number_of_nodes()
             for i in range(num):
                 new_graph = copy.deepcopy(g)
-                new_graph.insert_edge(0, i, num + i)
+                new_graph.insert_edge(0, i, num)
                 if not self.check_isomorphism(new_graph, output):
                     output.append(new_graph)
         return output
@@ -457,9 +467,21 @@ if __name__ == '__main__':
     path = gn.generate_path()
     star = gn.generate_star()
     out = gn.generate_graphs([path, star])
-    for g in out:
-        print(g.leaf_sequence())
+    # for g in out:
+    #     print(g.leaf_sequence())
     print(len(out))
+    print('5 vrcholove:')
+    for g in out:
+        print(g)
+    out = gn.generate_graphs(out)
+    print('6 vrcholove')
+    for g in out:
+        print(g)
+    print(len(out))
+
+    out = gn.generate_graphs(out)
+    print(len(out))
+
     out = gn.generate_graphs(out)
     print(len(out))
 
