@@ -1,4 +1,5 @@
 import random
+import math
 import copy
 import tkinter
 from tkinter import *
@@ -326,8 +327,6 @@ class Graph(object):
                 middle_degree = node.degree()
         return degree1 == len(self.nodes)-1 and middle_degree == len(self.nodes)-1
 
-
-
     def is_bipartite(self, src):
         # Create a color array to store colors
         # assigned to all veritces. Vertex
@@ -405,7 +404,7 @@ class Graph(object):
 
     def get_level_nums(self):
         vertex = self.nodes[0]
-        queue = [[vertex, 0, None]] # node, level, parent
+        queue = [[vertex, 0, None]]  # node, level, parent
         table = {0: 1}
         while queue:
             item = queue.pop(0)
@@ -424,18 +423,18 @@ class Graph(object):
 
         return table
 
-
     def draw(self):
-        main = tkinter.Tk()
         window_width = 1000
         window_height = 600
         drawing_width = window_width - 50
-        canvas = tkinter.Canvas(width=window_width, height=window_height)
-        canvas.pack()
         offset_x = 50
         offset_y = 50
-        pos_x = window_width/2
+        pos_x = window_width / 2
         pos_y = 50
+
+        main = tkinter.Tk()
+        canvas = tkinter.Canvas(width=window_width, height=window_height)
+        canvas.pack()
 
         table = self.get_level_nums()
         already_drawn_nodes_table = {}
@@ -444,13 +443,13 @@ class Graph(object):
             already_drawn_nodes_table[key] = 0
 
         def draw_node(node, posx, posy, parent_x, parent_y):
-            canvas.create_oval(posx - 15, posy - 15, posx + 15, posy + 15)
+            canvas.create_oval(posx - 15, posy - 15, posx + 15, posy + 15, width=3)
             canvas.create_text(posx, posy, text=str(node.value), font='helvetica 12 bold')
             canvas.create_line(posx, posy, parent_x, parent_y)
 
-        queue = []
+        queue = list()
         queue.append({'node': self.nodes[0], 'parent': None, 'posx': pos_x, 'posy': pos_y, 'parent_posx': pos_x,
-               'parent_posy': pos_y, 'level': 0})
+                      'parent_posy': pos_y, 'level': 0})
 
         while queue:
             node = queue.pop(0)
@@ -478,9 +477,61 @@ class Graph(object):
 
         main.mainloop()
 
+    def number_of_leaves_from_given_node(self, node):
+        result = 0
+        for edge in node.edges:
+            if edge.node_to != node:
+                if edge.node_to.is_leaf():
+                    result += 1
+            elif edge.note_from != node:
+                if edge.node_from.is_leaf():
+                    result += 1
+        return result
 
 
-class GraphGenerator():
+    def number_of_automorphisms(self):
+        if self.is_star():
+            return math.factorial(self.number_of_nodes() - 1)
+        if self.is_path():
+            return 2
+        result = 1
+        for node in self.nodes:
+            if node.degree() > 1:
+                result *= math.factorial(self.number_of_leaves_from_given_node(node))
+        return result
+
+    def check_symmetry_of_subtree_from_given_node(self, node):
+        # todo: treba pouzit multiset a tuple a prehladavanie do hlbky
+        children = []
+        for edge in node.edges:
+            if edge.node_from != node:
+                children.append(edge.node_from)
+            elif edge.node_to != node:
+                children.append(edge.node_to)
+
+        vertex = node
+        queue = [[vertex, 0, None]]  # node, level, parent
+        table = {0: 1}
+        while queue:
+            item = queue.pop(0)
+            node, level, parent = item
+
+            for edge in node.edges:
+                if edge.node_from != parent and edge.node_to != parent:
+                    if edge.node_from != node:
+                        queue.append([edge.node_from, level + 1, node])
+                    else:
+                        queue.append([edge.node_to, level + 1, node])
+                    if level + 1 in table:
+                        table[level + 1] += 1
+                    else:
+                        table[level + 1] = 1
+
+        return table
+
+
+
+class GraphGenerator:
 
     @staticmethod
     def generate_star(n):
@@ -519,6 +570,13 @@ class GraphGenerator():
                 return True
         return False
 
+    @staticmethod
+    def connect_graphs_by_node(g1, g2, node_g1, node_g2):
+        # todo
+        g = Graph()
+        return g
+
+
 if __name__ == '__main__':
     # 4 vertices graphs
     # g1 = Graph()
@@ -532,26 +590,34 @@ if __name__ == '__main__':
     # g2.insert_edge(0, 0, 2)
     # g2.insert_edge(0, 0, 3)
 
-    path = GraphGenerator.generate_path(4)
-    star = GraphGenerator.generate_star(4)
-    out = GraphGenerator.generate_isomorphic_graphs([path, star])
+    # path = GraphGenerator.generate_path(4)
+    # star = GraphGenerator.generate_star(4)
+    # out = GraphGenerator.generate_isomorphic_graphs([path, star])
+    # # # for g in out:
+    # # #     print(g.leaf_sequence())
+    # # print(len(out))
+    # # print('5 vrcholove:')
     # # for g in out:
-    # #     print(g.leaf_sequence())
-    # print(len(out))
-    # print('5 vrcholove:')
-    # for g in out:
-    #     print(g)
-    out = GraphGenerator.generate_isomorphic_graphs(out)
-    for g in out:
-        g.draw()
-    # print('6 vrcholove')
-    # for g in out:
-    #     print(g)
-    # print(len(out))
-    #
+    # #     print(g)
     # out = GraphGenerator.generate_isomorphic_graphs(out)
-    # print(len(out))
     #
+    # # print('6 vrcholove')
+    # # for g in out:
+    # #     print(g)
+    # # print(len(out))
+    # #
     # out = GraphGenerator.generate_isomorphic_graphs(out)
-    # print(len(out))
+    #
+    # for i in range(5):
+    #     out = GraphGenerator.generate_isomorphic_graphs(out)
+    #     print(len(out))
+    #
+    # for g in out:
+    #     g.draw()
+    # #
+    # # out = GraphGenerator.generate_isomorphic_graphs(out)
+    # # print(len(out))
+
+
+
 
