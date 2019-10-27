@@ -625,45 +625,7 @@ class GraphGenerator:
 
 if __name__ == '__main__':
     pass
-    # 4 vertices graphs
-    # g1 = Graph()
-    # g2 = Graph()
-    #
-    # g1.insert_edge(0, 0, 1)
-    # g1.insert_edge(0, 1, 2)
-    # g1.insert_edge(0, 2, 3)
-    #
-    # g2.insert_edge(0, 0, 1)
-    # g2.insert_edge(0, 0, 2)
-    # g2.insert_edge(0, 0, 3)
 
-    # path = GraphGenerator.generate_path(4)
-    # star = GraphGenerator.generate_star(4)
-    # out = GraphGenerator.generate_isomorphic_graphs([path, star])
-    # # # for g in out:
-    # # #     print(g.leaf_sequence())
-    # # print(len(out))
-    # # print('5 vrcholove:')
-    # # for g in out:
-    # #     print(g)
-    # out = GraphGenerator.generate_isomorphic_graphs(out)
-    #
-    # # print('6 vrcholove')
-    # # for g in out:
-    # #     print(g)
-    # # print(len(out))
-    # #
-    # out = GraphGenerator.generate_isomorphic_graphs(out)
-    #
-    # for i in range(5):
-    #     out = GraphGenerator.generate_isomorphic_graphs(out)
-    #     print(len(out))
-    #
-    # for g in out:
-    #     g.draw()
-    # #
-    # # out = GraphGenerator.generate_isomorphic_graphs(out)
-    # # print(len(out))
 
 
 

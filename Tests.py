@@ -42,6 +42,18 @@ class TestAutomorphisms(unittest.TestCase):
         g.insert_edge(0, 5, 6)
         self.assertEqual(1, g.number_of_automorphisms())
 
+class TestGraphIsomorphisms(unittest.TestCase):
+
+    def test_tree_with_n_nodes(self):
+        path = GraphGenerator.generate_path(4)
+        star = GraphGenerator.generate_star(4)
+        out = GraphGenerator.generate_isomorphic_graphs([path, star])
+        self.assertEqual(3, len(out))
+        out = GraphGenerator.generate_isomorphic_graphs(out)
+        self.assertEqual(6, len(out))
+        out = GraphGenerator.generate_isomorphic_graphs(out)
+        self.assertEqual(11, len(out))
+
 
 
 
