@@ -48,7 +48,6 @@ class Graph(object):
         for node in other_graph.nodes:
             if node != other_node:
                 node.value += self.number_of_nodes() + offset
-                #self.nodes.append(node)
                 #self._node_map[node.value] = node
 
         neighbours = other_node.get_neighbours()
@@ -82,6 +81,8 @@ class Graph(object):
 
         self.nodes.extend(other_graph.nodes)
         self.edges.extend(other_graph.edges)
+        for node in self.nodes:
+            self._node_map[node.value] = node
 
 
     def set_node_names(self, names):
@@ -710,7 +711,9 @@ if __name__ == '__main__':
     g2 = GraphGenerator.generate_path(2)
 
     result = GraphGenerator.join_graphs_by_edge(g1, g2, g1.nodes[0], g2.nodes[0])
+    print(result._node_map)
     result.draw()
+
 
 
 
