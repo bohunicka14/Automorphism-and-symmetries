@@ -531,8 +531,9 @@ class Graph(object):
                                   'parent_posy': node['posy'],
                                   'level': node['level']+1})
 
-        canvas.create_text(50, window_height - 50, text='Aut(G) = '+str(self.number_of_automorphisms()), font='helvetica 12 bold')
-
+        canvas.create_text(60, window_height - 50, text='Aut(G) = '+str(self.number_of_automorphisms()), font='helvetica 12 bold')
+        canvas.create_text(60, window_height - 80, text='Degree sequence = ' + ','.join(map(str, self.degree_sequence())),
+                           font='helvetica 12 bold')
         main.mainloop()
 
     def number_of_leaves_from_given_node(self, node):
@@ -546,6 +547,14 @@ class Graph(object):
                     result += 1
         return result
 
+    def is_symmetric(self):
+        _sequence = self.degree_sequence()
+        _set = set(_sequence)
+        for item in _set:
+            if _sequence.count(item) % 2 != 0:
+                return False
+        return True
+
     def number_of_automorphisms(self):
         if self.is_star():
             return math.factorial(self.number_of_nodes() - 1)
@@ -556,6 +565,9 @@ class Graph(object):
             if node.degree() > 1:
                 #result *= math.factorial(self.number_of_leaves_from_given_node(node))
                 result *= self.number_of_symmetry_permutations_of_subtree_from_given_node(node)
+
+        if self.is_symmetric():
+            return result * 2
         return result
 
     def number_of_symmetry_permutations_of_subtree_from_given_node(self, _node):

@@ -48,6 +48,28 @@ class TestAutomorphisms(unittest.TestCase):
         g.insert_edge(0, 5, 6)
         self.assertEqual(1, g.number_of_automorphisms())
 
+    def test_symmetric_tree(self):
+        g = Graph()
+        g.insert_edge(0, 0, 1)
+        g.insert_edge(0, 1, 2)
+        g.insert_edge(0, 1, 3)
+        g.insert_edge(0, 3, 4)
+        g.insert_edge(0, 3, 5)
+        self.assertEqual(8, g.number_of_automorphisms())
+
+        g = Graph()
+        g.insert_edge(0, 0, 1)
+        g.insert_edge(0, 1, 2)
+        g.insert_edge(0, 1, 3)
+        g.insert_edge(0, 3, 4)
+        g.insert_edge(0, 4, 5)
+        g.insert_edge(0, 5, 6)
+        g.insert_edge(0, 6, 7)
+        g.insert_edge(0, 6, 8)
+
+        self.assertEqual(8, g.number_of_automorphisms())
+
+
 class TestTreeIsomorphisms(unittest.TestCase):
 
     def test_tree_with_n_nodes(self):
