@@ -531,6 +531,8 @@ class Graph(object):
                                   'parent_posy': node['posy'],
                                   'level': node['level']+1})
 
+        canvas.create_text(50, window_height - 50, text='Aut(G) = '+str(self.number_of_automorphisms()), font='helvetica 12 bold')
+
         main.mainloop()
 
     def number_of_leaves_from_given_node(self, node):
@@ -703,19 +705,44 @@ class GraphGenerator:
         g1_copy.join_other_graph_by_node(g1_copy.nodes[-1], node_g2_copy, g2_copy, 1)
         return g1_copy
 
+    @staticmethod
+    def join_graphs_by_node_all_possibilities(g1, g2):
+        result = []
+        if g1.number_of_nodes() >= g2.number_of_nodes():
+            for g1_node in g1.nodes:
+                for g2_node in g2.nodes:
+                    new_graph = GraphGenerator.join_graphs_by_node(g1, g2, g1_node, g2_node)
+                    if not GraphGenerator.check_isomorphism(new_graph, result):
+                        result.append(new_graph)
+        else:
+            for g2_node in g2.nodes:
+                for g1_node in g1.nodes:
+                    new_graph = GraphGenerator.join_graphs_by_node(g2, g1, g2_node, g1_node)
+                    if not GraphGenerator.check_isomorphism(new_graph, result):
+                        result.append(new_graph)
+
+        return result
+
+    @staticmethod
+    def join_graphs_by_edge_all_possibilities(g1, g2):
+        result = []
+        if g1.number_of_nodes >= g2.number_of_nodes():
+            for g1_node in g1.nodes:
+                for g2_node in g2.nodes:
+                    new_graph = GraphGenerator.join_graphs_by_edge(g1, g2, g1_node, g2_node)
+                    if not GraphGenerator.check_isomorphism(new_graph, result):
+                        result.append(new_graph)
+        else:
+            for g2_node in g2.nodes:
+                for g1_node in g1.nodes:
+                    new_graph = GraphGenerator.join_graphs_by_edge(g2, g1, g2_node, g1_node)
+                    if not GraphGenerator.check_isomorphism(new_graph, result):
+                        result.append(new_graph)
+
+        return result
+
 if __name__ == '__main__':
-    # g1 = GraphGenerator.generate_trivial_graph()
-    # g2 = GraphGenerator.generate_trivial_graph()
-    # g1 = GraphGenerator.generate_path(3)
-    # g2 = GraphGenerator.generate_path(3)
-
-    g1 = GraphGenerator.generate_star(4)
-    g2 = GraphGenerator.generate_path(2)
-
-    result = GraphGenerator.join_graphs_by_edge(g1, g2, g1.nodes[0], g2.nodes[0])
-    print(result._node_map)
-    result.draw()
-
+    pass
 
 
 
