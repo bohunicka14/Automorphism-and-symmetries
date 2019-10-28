@@ -19,6 +19,15 @@ class Node(object):
     def is_leaf(self):
         return len(self.edges) == 1
 
+    def get_neighbours(self):
+        result = set()
+        for edge in self.edges:
+            if edge.node_to != self:
+                result.add(edge.node_to)
+            elif edge.node_from != self:
+                result.add(edge.node_from)
+        return result
+
 
 class Edge(object):
     def __init__(self, value, node_from, node_to):
@@ -27,11 +36,53 @@ class Edge(object):
         self.node_to = node_to
 
 class Graph(object):
+
     def __init__(self, nodes=None, edges=None):
         self.nodes = nodes or []
         self.edges = edges or []
         self.node_names = []
         self._node_map = {} # node_val / node obj
+
+
+    def join_other_graph_by_node(self, my_node, other_node, other_graph, offset=0):
+        for node in other_graph.nodes:
+            if node != other_node:
+                node.value += self.number_of_nodes() + offset
+                #self.nodes.append(node)
+                #self._node_map[node.value] = node
+
+        neighbours = other_node.get_neighbours()
+        for neighbour in neighbours:
+            for edge in neighbour.edges:
+                if edge.node_from == other_node:
+                    edge.node_from = my_node
+                elif edge.node_to == other_node:
+                    edge.node_to = my_node
+
+        for node in other_graph.nodes:
+            for edge in node.edges:
+                if edge.node_to == other_node:
+                    edge.node_to = my_node
+                elif edge.node_from == other_node:
+                    edge.node_from = my_node
+
+        for edge in other_node.edges:
+            if edge.node_from == other_node:
+                edge.node_from = my_node
+            elif edge.node_to == other_node:
+                edge.node_to = my_node
+
+        my_node.edges.extend(other_node.edges)
+
+        for edge in other_graph.edges:
+            if edge.node_to == other_node:
+                edge.node_to = my_node
+            elif edge.node_from == other_node:
+                edge.node_from = my_node
+
+        self.nodes.extend(other_graph.nodes)
+        self.edges.extend(other_graph.edges)
+
 
     def set_node_names(self, names):
         """The Nth name in names should correspond to node number N.
@@ -95,9 +146,10 @@ class Graph(object):
         node_from = nodes[node_from_val]
         node_to = nodes[node_to_val]
 
-        # checking if opposite edge exists
+        # checking if opposite edge exists or the same edge exists
         for edge in node_from.edges:
-            if edge.node_to == node_from and edge.node_from == node_to:
+            if ((edge.node_to == node_from and edge.node_from == node_to) or
+                (edge.node_to == node_to and edge.node_from == node_from)):
                 return False
 
         new_edge = Edge(new_edge_val, node_from, node_to)
@@ -489,7 +541,6 @@ class Graph(object):
                     result += 1
         return result
 
-
     def number_of_automorphisms(self):
         if self.is_star():
             return math.factorial(self.number_of_nodes() - 1)
@@ -534,8 +585,6 @@ class Graph(object):
                             table[level + 1].update(str(new_node.degree()))
                         else:
                             table[level + 1] = Counter(str(new_node.degree()))
-
-
             result.append(table)
 
         help_list = [set()]
@@ -587,6 +636,12 @@ class GraphGenerator:
         return g
 
     @staticmethod
+    def generate_trivial_graph():
+        g = Graph()
+        g.insert_node(0)
+        return g
+
+    @staticmethod
     def generate_path(n):
         g = Graph()
         for i in range(n - 1):
@@ -617,14 +672,45 @@ class GraphGenerator:
         return False
 
     @staticmethod
-    def connect_graphs_by_node(g1, g2, node_g1, node_g2):
-        # todo
-        g = Graph()
-        return g
+    def join_graphs_by_node(g1, g2, node_g1, node_g2):
+        g1_copy = copy.deepcopy(g1)
+        g2_copy = copy.deepcopy(g2)
+        for node in g1_copy.nodes:
+            if node.value == node_g1.value:
+                node_g1_copy = node
 
+        for node in g2_copy.nodes:
+            if node.value == node_g2.value:
+                node_g2_copy = node
+
+        g1_copy.join_other_graph_by_node(node_g1_copy, node_g2_copy, g2_copy)
+
+        return g1_copy
+
+    @staticmethod
+    def join_graphs_by_edge(g1, g2, node_g1, node_g2):
+        g1_copy = copy.deepcopy(g1)
+        g2_copy = copy.deepcopy(g2)
+        g1_copy.insert_edge(0, node_g1.value, len(g1_copy.nodes))
+
+        for node in g2_copy.nodes:
+            if node.value == node_g2.value:
+                node_g2_copy = node
+
+        g1_copy.join_other_graph_by_node(g1_copy.nodes[-1], node_g2_copy, g2_copy, 1)
+        return g1_copy
 
 if __name__ == '__main__':
-    pass
+    # g1 = GraphGenerator.generate_trivial_graph()
+    # g2 = GraphGenerator.generate_trivial_graph()
+    # g1 = GraphGenerator.generate_path(3)
+    # g2 = GraphGenerator.generate_path(3)
+
+    g1 = GraphGenerator.generate_star(4)
+    g2 = GraphGenerator.generate_path(2)
+
+    result = GraphGenerator.join_graphs_by_edge(g1, g2, g1.nodes[0], g2.nodes[0])
+    result.draw()
 
 
 
