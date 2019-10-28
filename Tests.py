@@ -66,8 +66,14 @@ class TestTreeJoining(unittest.TestCase):
         g1 = GraphGenerator.generate_trivial_graph()
         g2 = GraphGenerator.generate_trivial_graph()
         result = GraphGenerator.join_graphs_by_node(g1, g2, g1.nodes[0], g2.nodes[0])
-        self.assertEqual(g1.number_of_nodes()+g2.number_of_nodes(), result.number_of_nodes())
+        self.assertEqual(g1.number_of_nodes(), result.number_of_nodes())
+        self.assertEqual(g2.number_of_nodes(), result.number_of_nodes())
         self.assertEqual(g1.number_of_edges() + g2.number_of_edges(), result.number_of_edges())
+        self.assertEqual(1, result.number_of_automorphisms())
+
+        result = GraphGenerator.join_graphs_by_edge(g1, g2, g1.nodes[0], g2.nodes[0])
+        self.assertEqual(g1.number_of_nodes() + g2.number_of_nodes(), result.number_of_nodes())
+        self.assertEqual(g1.number_of_edges() + g2.number_of_edges() + 1, result.number_of_edges())
         self.assertEqual(2, result.number_of_automorphisms())
 
 if __name__ == '__main__':

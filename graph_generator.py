@@ -79,7 +79,9 @@ class Graph(object):
             elif edge.node_from == other_node:
                 edge.node_from = my_node
 
-        self.nodes.extend(other_graph.nodes)
+        for node in other_graph.nodes:
+            if node != other_node:
+                self.nodes.append(node)
         self.edges.extend(other_graph.edges)
         for node in self.nodes:
             self._node_map[node.value] = node
