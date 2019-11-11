@@ -479,7 +479,7 @@ class Graph(object):
 
         return table
 
-    def draw(self):
+    def draw(self, additional_info=''):
         window_width = 1000
         window_height = 600
         drawing_width = window_width - 50
@@ -532,8 +532,9 @@ class Graph(object):
                                   'level': node['level']+1})
 
         canvas.create_text(60, window_height - 50, text='Aut(G) = '+str(self.number_of_automorphisms()), font='helvetica 12 bold')
-        canvas.create_text(60, window_height - 80, text='Degree sequence = ' + ','.join(map(str, self.degree_sequence())),
-                           font='helvetica 12 bold')
+        # canvas.create_text(60, window_height - 80, text='Degree sequence = ' + ','.join(map(str, self.degree_sequence())),
+        #                    font='helvetica 12 bold')
+        canvas.create_text(150, window_height - 80, text=additional_info, font='helvetica 12 bold')
         main.mainloop()
 
     def number_of_leaves_from_given_node(self, node):

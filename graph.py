@@ -54,6 +54,7 @@ class Graph(object):
     def insert_edge(self, new_edge_val, node_from_val, node_to_val):
         "Insert a new edge, creating new nodes if necessary"
         nodes = {node_from_val: None, node_to_val: None}
+        nodes = {node_from_val: None, node_to_val: None}
         for node in self.nodes:
             if node.value in nodes:
                 nodes[node.value] = node
