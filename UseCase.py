@@ -14,9 +14,22 @@ class UseCase():
     def join_2_simple_graphs2():
         g1 = GraphGenerator.generate_star(4)
         g2 = GraphGenerator.generate_path(3)
+
         result = GraphGenerator.join_graphs_by_node_all_possibilities(g1, g2)
         for g in result:
             g.draw()
+
+    @staticmethod
+    def join_2_simple_graphs3():
+        g1 = GraphGenerator.generate_star(4)
+        g2 = GraphGenerator.generate_path(5)
+        g1.draw('first')
+        g2.draw('second')
+        result = GraphGenerator.join_graphs_by_node_all_possibilities(g1, g2)
+        for g in result:
+            g.draw()
+
+        return result
 
     @staticmethod
     def generate_graphs_iteratively_by_joining(n):
@@ -41,4 +54,5 @@ class UseCase():
 
 
 if __name__ == '__main__':
-    UseCase.generate_graphs_iteratively_by_joining(3)
+    # UseCase.generate_graphs_iteratively_by_joining(3)
+    result = UseCase.join_2_simple_graphs2()

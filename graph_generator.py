@@ -548,13 +548,97 @@ class Graph(object):
                     result += 1
         return result
 
-    def is_symmetric(self):
-        _sequence = self.degree_sequence()
-        _set = set(_sequence)
-        for item in _set:
-            if _sequence.count(item) % 2 != 0:
+    def is_symmetric_by_edge(self):
+        '''
+        Testing symmetry by dividing tree into 2 by cutting one of the edge
+        '''
+
+        edges_to_test = []
+        for edge in self.edges:
+            if edge.node_from.degree() != 1 and edge.node_to.degree() != 1:
+                edges_to_test.append(edge)
+
+        for edge in edges_to_test:
+            permutations = 1
+            children = []
+            children.append(edge.node_from)
+            children.append(edge.node_to)
+
+            result = []  # list of tables of multisets , table = level, miltiset = number of each degree in given level,
+            # each item in result corresponds to child of entry node
+
+            queue = []
+            for child in children:
+                queue.append([child, 0, None])  # node, level, parent
+                table = {0: Counter(str(child.degree()))}
+                while queue:
+                    item = queue.pop(0)
+                    node, level, parent = item
+
+                    for edge in node.edges:
+                        if edge.node_from != parent and edge.node_to != parent:
+                            if edge.node_from != node:
+                                queue.append([edge.node_from, level + 1, node])
+                                new_node = edge.node_from
+                            else:
+                                queue.append([edge.node_to, level + 1, node])
+                                new_node = edge.node_to
+                            if level + 1 in table:
+                                table[level + 1].update(str(new_node.degree()))
+                            else:
+                                table[level + 1] = Counter(str(new_node.degree()))
+                result.append(table)
+
+            help_list = [set()]
+
+            def is_in(index):
+                for i in range(len(help_list)):
+                    if index in help_list[i]:
+                        return True
                 return False
-        return True
+
+            def are_equal(table1, table2):
+                if len(table1) != len(table2):
+                    return False
+                for key in table1.keys():
+                    if key not in table2:
+                        return False
+                    if table1[key] != table2[key]:
+                        return False
+                return True
+
+            print('result: ', result)
+            help_index = 0
+            for index1 in range(len(result)):
+                if index1 != 0 and len(help_list[help_index]) > 0:
+                    help_index += 1
+                    help_list.append(set())
+                for index2 in range(index1 + 1, len(result)):
+                    if index1 != 0:
+                        if not is_in(index1) or not is_in(index2):
+                            if are_equal(result[index1], result[index2]):
+                                help_list[help_index].add(index1)
+                                help_list[help_index].add(index2)
+                    else:
+                        if are_equal(result[index1], result[index2]):
+                            help_list[help_index].add(index1)
+                            help_list[help_index].add(index2)
+
+            for item in help_list:
+                permutations *= math.factorial(len(item))
+            print('help list: ', help_list)
+            print('number of permutations: ', permutations)
+            if permutations == 2:
+                return True
+
+        return False
+        ## old version (wrong)
+        # _sequence = self.degree_sequence()
+        # _set = set(_sequence)
+        # for item in _set:
+        #     if _sequence.count(item) % 2 != 0:
+        #         return False
+        # return True
 
     def number_of_automorphisms(self):
         if self.is_star():
@@ -564,10 +648,11 @@ class Graph(object):
         result = 1
         for node in self.nodes:
             if node.degree() > 1:
+                print('node value: ', node.value)
                 #result *= math.factorial(self.number_of_leaves_from_given_node(node))
                 result *= self.number_of_symmetry_permutations_of_subtree_from_given_node(node)
 
-        if self.is_symmetric():
+        if self.is_symmetric_by_edge():
             return result * 2
         return result
 
@@ -580,12 +665,12 @@ class Graph(object):
             elif edge.node_to != _node:
                 children.append(edge.node_to)
 
-        result = [] # list of tables of miltisets , table = level, miltiset = number of each degree in given level,
+        result = [] # list of tables of multisets , table = level, miltiset = number of each degree in given level,
                     # each item in result corresponds to child of entry node
 
+        queue = []
         for child in children:
-            vertex = child
-            queue = [[vertex, 0, _node]]  # node, level, parent
+            queue.append([child, 0, _node])  # node, level, parent
             table = {0: Counter(str(child.degree()))}
             while queue:
                 item = queue.pop(0)
@@ -621,15 +706,15 @@ class Graph(object):
                 if table1[key] != table2[key]:
                     return False
             return True
-
+        print('result: ', result)
         help_index = 0
         for index1 in range(len(result)):
             if index1 != 0 and len(help_list[help_index]) > 0:
                 help_index += 1
                 help_list.append(set())
-            for index2 in range(index1+1,len(result)):
+            for index2 in range(index1+1, len(result)):
                 if index1 != 0:
-                    if not is_in(index1) and not is_in(index2):
+                    if not is_in(index1) or not is_in(index2):
                         if are_equal(result[index1], result[index2]):
                             help_list[help_index].add(index1)
                             help_list[help_index].add(index2)
@@ -640,7 +725,8 @@ class Graph(object):
 
         for item in help_list:
             permutations *= math.factorial(len(item))
-
+        print('help list: ', help_list)
+        print('number of permutations: ', permutations)
         return permutations
 
 

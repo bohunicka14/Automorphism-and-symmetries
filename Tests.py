@@ -1,5 +1,7 @@
 import unittest
 import math
+import UseCase
+from UseCase import *
 from graph_generator import *
 
 class TestInsertingEdges(unittest.TestCase):
@@ -48,7 +50,7 @@ class TestAutomorphisms(unittest.TestCase):
         g.insert_edge(0, 5, 6)
         self.assertEqual(1, g.number_of_automorphisms())
 
-    def test_symmetric_tree(self):
+    def test_symmetric_tree2(self):
         g = Graph()
         g.insert_edge(0, 0, 1)
         g.insert_edge(0, 1, 2)
