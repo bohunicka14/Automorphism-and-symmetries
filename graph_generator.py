@@ -4,6 +4,8 @@ import copy
 import tkinter
 from collections import Counter
 from tkinter import *
+from PIL import ImageGrab, Image, ImageDraw, ImageFont
+import threading, time
 # import numpy
 # import matplotlib.pyplot as plt
 
@@ -479,7 +481,7 @@ class Graph(object):
 
         return table
 
-    def draw(self, additional_info=''):
+    def draw(self, additional_info='', save_only=True, save_path=''):
         window_width = 1000
         window_height = 600
         drawing_width = window_width - 50
@@ -487,10 +489,17 @@ class Graph(object):
         offset_y = 50
         pos_x = window_width / 2
         pos_y = 50
+        white = (255, 255, 255)
+        black = (0,0,0)
+        font = ImageFont.truetype(font='arialbd.ttf', size=16)
 
-        main = tkinter.Tk()
-        canvas = tkinter.Canvas(width=window_width, height=window_height)
-        canvas.pack()
+        if save_only:
+            image = Image.new("RGB", (window_width, window_height), white)
+            draw = ImageDraw.Draw(image)
+        else:
+            main = tkinter.Tk()
+            canvas = tkinter.Canvas(width=window_width, height=window_height)
+            canvas.pack()
 
         table = self.get_level_nums()
         already_drawn_nodes_table = {}
@@ -499,9 +508,14 @@ class Graph(object):
             already_drawn_nodes_table[key] = 0
 
         def draw_node(node, posx, posy, parent_x, parent_y):
-            canvas.create_oval(posx - 15, posy - 15, posx + 15, posy + 15, width=3)
-            canvas.create_text(posx, posy, text=str(node.value), font='helvetica 12 bold')
-            canvas.create_line(posx, posy, parent_x, parent_y)
+            if save_only:
+                draw.ellipse([posx - 15, posy - 15, posx + 15, posy + 15], width=3, outline=black)
+                draw.text([posx-4, posy-7], text=str(node.value), font=font, fill=black)
+                draw.line([posx, posy, parent_x, parent_y], fill=black)
+            else:
+                canvas.create_oval(posx - 15, posy - 15, posx + 15, posy + 15, width=3)
+                canvas.create_text(posx, posy, text=str(node.value), font='helvetica 12 bold')
+                canvas.create_line(posx, posy, parent_x, parent_y)
 
         queue = list()
         queue.append({'node': self.nodes[0], 'parent': None, 'posx': pos_x, 'posy': pos_y, 'parent_posx': pos_x,
@@ -531,11 +545,19 @@ class Graph(object):
                                   'parent_posy': node['posy'],
                                   'level': node['level']+1})
 
-        canvas.create_text(60, window_height - 50, text='Aut(G) = '+str(self.number_of_automorphisms()), font='helvetica 12 bold')
-        # canvas.create_text(60, window_height - 80, text='Degree sequence = ' + ','.join(map(str, self.degree_sequence())),
-        #                    font='helvetica 12 bold')
-        canvas.create_text(150, window_height - 80, text=additional_info, font='helvetica 12 bold')
-        main.mainloop()
+        if save_only:
+            draw.text([60, window_height - 50], text='Aut(G) = '+str(self.number_of_automorphisms()), font=font, fill=black)
+            draw.text([150, window_height - 80], text=additional_info, font=font, fill=black)
+        else:
+            canvas.create_text(60, window_height - 50, text='Aut(G) = '+str(self.number_of_automorphisms()), font='helvetica 12 bold')
+            # canvas.create_text(60, window_height - 80, text='Degree sequence = ' + ','.join(map(str, self.degree_sequence())),
+            #                    font='helvetica 12 bold')
+            canvas.create_text(150, window_height - 80, text=additional_info, font='helvetica 12 bold')
+
+        if save_only:
+            image.save(save_path)
+        else:
+            main.mainloop()
 
     def number_of_leaves_from_given_node(self, node):
         result = 0
@@ -841,7 +863,8 @@ class GraphGenerator:
         return result
 
 if __name__ == '__main__':
-    pass
+    g = GraphGenerator.generate_star(5)
+    g.draw()
 
 
 
