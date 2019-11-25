@@ -75,12 +75,13 @@ class UseCase():
         for i in range(len(all_graphs)):
             for j in range(i, len(all_graphs)):
                 if all_graphs[i].number_of_nodes() < all_graphs[j].number_of_nodes():
-                    max_iteration = get_max_folder_iteration(str(i) + '_' + str(j))
+                    max_iteration = get_max_folder_iteration(str(all_graphs[i].number_of_nodes()) + '_' + str(all_graphs[j].number_of_nodes()))
+                    print('max iteration: ', max_iteration)
                     new_folder = FOLDER + r'/' + str(all_graphs[i].number_of_nodes()) + '_' + \
                                  str(all_graphs[j].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
                     os.mkdir(new_folder)
                 else:
-                    max_iteration = get_max_folder_iteration(str(j) + '_' + str(i))
+                    max_iteration = get_max_folder_iteration(str(all_graphs[j].number_of_nodes()) + '_' + str(all_graphs[i].number_of_nodes()))
                     new_folder = FOLDER + r'/' + str(all_graphs[j].number_of_nodes()) + '_' + \
                                  str(all_graphs[i].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
                     os.mkdir(new_folder)
@@ -95,5 +96,5 @@ class UseCase():
 
 
 if __name__ == '__main__':
-    UseCase.generate_graphs_iteratively_by_joining(4)
+    UseCase.generate_graphs_iteratively_by_joining(6)
     # result = UseCase.join_2_simple_graphs2()
