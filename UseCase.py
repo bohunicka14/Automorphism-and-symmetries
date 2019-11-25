@@ -1,7 +1,8 @@
 from graph_generator import *
-import os, shutil
+import os, shutil, csv
 
-FOLDER = r'./results'
+FOLDER = r'./results_joining_by_node'
+FULL_CSV_PATH = FOLDER + '/results.csv'
 
 class UseCase():
 
@@ -35,7 +36,7 @@ class UseCase():
         return result
 
     @staticmethod
-    def generate_graphs_iteratively_by_joining(n):
+    def generate_graphs_iteratively_by_joining(n, by_node = True):
 
         def folder_exists(name):
             for item in os.listdir(FOLDER):
@@ -72,27 +73,37 @@ class UseCase():
                 out = GraphGenerator.generate_isomorphic_graphs(out)
             all_graphs.extend(out)
 
-        for i in range(len(all_graphs)):
-            for j in range(i, len(all_graphs)):
-                if all_graphs[i].number_of_nodes() < all_graphs[j].number_of_nodes():
-                    max_iteration = get_max_folder_iteration(str(all_graphs[i].number_of_nodes()) + '_' + str(all_graphs[j].number_of_nodes()))
-                    print('max iteration: ', max_iteration)
-                    new_folder = FOLDER + r'/' + str(all_graphs[i].number_of_nodes()) + '_' + \
-                                 str(all_graphs[j].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
-                    os.mkdir(new_folder)
-                else:
-                    max_iteration = get_max_folder_iteration(str(all_graphs[j].number_of_nodes()) + '_' + str(all_graphs[i].number_of_nodes()))
-                    new_folder = FOLDER + r'/' + str(all_graphs[j].number_of_nodes()) + '_' + \
-                                 str(all_graphs[i].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
-                    os.mkdir(new_folder)
+        with open(FULL_CSV_PATH, 'w', newline='') as csv_file:
+            csv_writer = csv.writer(csv_file, delimiter=';')
+            csv_writer.writerow(['First', 'Second'])
+            for i in range(len(all_graphs)):
+                for j in range(i, len(all_graphs)):
+                    if all_graphs[i].number_of_nodes() < all_graphs[j].number_of_nodes():
+                        max_iteration = get_max_folder_iteration(str(all_graphs[i].number_of_nodes()) + '_' + str(all_graphs[j].number_of_nodes()))
+                        print('max iteration: ', max_iteration)
+                        new_folder = FOLDER + r'/' + str(all_graphs[i].number_of_nodes()) + '_' + \
+                                     str(all_graphs[j].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
+                        os.mkdir(new_folder)
+                    else:
+                        max_iteration = get_max_folder_iteration(str(all_graphs[j].number_of_nodes()) + '_' + str(all_graphs[i].number_of_nodes()))
+                        new_folder = FOLDER + r'/' + str(all_graphs[j].number_of_nodes()) + '_' + \
+                                     str(all_graphs[i].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
+                        os.mkdir(new_folder)
 
-                result = GraphGenerator.join_graphs_by_node_all_possibilities(all_graphs[i], all_graphs[j])
-                all_graphs[i].draw('First graph to be joined', True, new_folder + '/first.jpg')
-                all_graphs[j].draw('Second graph to be joined', True, new_folder + '/second.jpg')
-                image_file_count = 0
-                for g in result:
-                    g.draw('Result from joining 2 graphs', True, new_folder + '/' + str(image_file_count) + '.jpg')
-                    image_file_count += 1
+                    if by_node:
+                        result = GraphGenerator.join_graphs_by_node_all_possibilities(all_graphs[i], all_graphs[j])
+                    else:
+                        result = GraphGenerator.join_graphs_by_edge_all_possibilities(all_graphs[i], all_graphs[j])
+                    all_graphs[i].draw('First graph to be joined', True, new_folder + '/first.jpg')
+                    all_graphs[j].draw('Second graph to be joined', True, new_folder + '/second.jpg')
+                    csv_writer.writerow([str(all_graphs[i].number_of_automorphisms()), str(all_graphs[j].number_of_automorphisms())])
+                    csv_writer.writerow([' '])
+                    csv_writer.writerow(['Result tree'])
+                    image_file_count = 0
+                    for g in result:
+                        g.draw('Result from joining 2 graphs', True, new_folder + '/' + str(image_file_count) + '.jpg')
+                        image_file_count += 1
+                        csv_writer.writerow([str(g.number_of_automorphisms())])
 
 
 if __name__ == '__main__':
