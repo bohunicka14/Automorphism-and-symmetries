@@ -74,6 +74,12 @@ class TestAutomorphisms(unittest.TestCase):
 
 class TestTreeIsomorphisms(unittest.TestCase):
 
+    def test_parent_sequence(self):
+        path = GraphGenerator.generate_path(2)
+        self.assertEqual([1, 1], path.parent_sequence())
+        star = GraphGenerator.generate_star(5)
+        self.assertEqual([4], star.parent_sequence())
+
     def test_tree_with_2_nodes(self):
         path = GraphGenerator.generate_path(2)
         out = GraphGenerator.generate_isomorphic_graphs([path])
@@ -85,11 +91,21 @@ class TestTreeIsomorphisms(unittest.TestCase):
         path = GraphGenerator.generate_path(4)
         star = GraphGenerator.generate_star(4)
         out = GraphGenerator.generate_isomorphic_graphs([path, star])
+        # 5 nodes
         self.assertEqual(3, len(out))
         out = GraphGenerator.generate_isomorphic_graphs(out)
+        # 6 nodes
         self.assertEqual(6, len(out))
         out = GraphGenerator.generate_isomorphic_graphs(out)
+        # 7 nodes
         self.assertEqual(11, len(out))
+        out = GraphGenerator.generate_isomorphic_graphs(out)
+        # 8 nodes
+        self.assertEqual(23, len(out))
+        out = GraphGenerator.generate_isomorphic_graphs(out)
+        # 9 nodes
+        self.assertEqual(47, len(out))
+
 
 class TestTreeJoining(unittest.TestCase):
 

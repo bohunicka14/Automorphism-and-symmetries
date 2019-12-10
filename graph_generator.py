@@ -125,6 +125,43 @@ class Graph(object):
         result.sort(reverse=True)
         return result
 
+    def parent_sequence(self):
+        '''
+        :return: degree sequence of every node that has at least one leaf in his children
+        '''
+        def has_child_that_is_leaf(node):
+            for edge in node.edges:
+                child = edge.node_to if node != edge.node_to else edge.node_from
+                if child.is_leaf():
+                    return True
+            return False
+
+        ret = []
+        for node in self.nodes:
+            if has_child_that_is_leaf(node):
+                ret.append(node.degree())
+        ret.sort(reverse=True)
+        return ret
+
+    def degree__number_of_leaves_as_child_sequence(self):
+        def number_of_leaves_as_childs(node):
+            number = 0
+            for edge in node.edges:
+                child = edge.node_to if node != edge.node_to else edge.node_from
+                if child.is_leaf():
+                    number += 1
+            return number
+
+        _dict = dict()
+        for node in self.nodes:
+            if node.degree() not in _dict:
+                _dict[node.degree] = Counter(str(number_of_leaves_as_childs(node)))
+            else:
+                dict[node.degree].update(str(number_of_leaves_as_childs(node)))
+
+        return _dict
+
+
     def check_k_regularity(self, k):
         for node in self.nodes:
             if node.degree() != k:
@@ -437,6 +474,19 @@ class Graph(object):
         # color
         return True
 
+    def compare_degree__number_of_leaves_as_child_sequence(self, g):
+        this = self.degree__number_of_leaves_as_child_sequence()
+        other = g.degree__number_of_leaves_as_child_sequence()
+        if len(this) != len(other):
+            return False
+        for key,value in this.items():
+            try:
+                if other[key] != this[key]:
+                    return False
+            except KeyError:
+                return False
+        return True
+
     def is_isomorphic(self, g):
         if self.number_of_nodes() != g.number_of_nodes():
             return False
@@ -448,6 +498,10 @@ class Graph(object):
             return False
         if self.leaf_sequence() != g.leaf_sequence():
             return False
+        if self.parent_sequence() != g.parent_sequence():
+            return False
+        # if self.compare_degree__number_of_leaves_as_child_sequence(g) == False:
+        #     return False
         # todo: add other tests
 
         return True
@@ -629,7 +683,7 @@ class Graph(object):
                         return False
                 return True
 
-            print('result: ', result)
+            # print('result: ', result)
             help_index = 0
             for index1 in range(len(result)):
                 if index1 != 0 and len(help_list[help_index]) > 0:
@@ -648,8 +702,8 @@ class Graph(object):
 
             for item in help_list:
                 permutations *= math.factorial(len(item))
-            print('help list: ', help_list)
-            print('number of permutations: ', permutations)
+            # print('help list: ', help_list)
+            # print('number of permutations: ', permutations)
             if permutations == 2:
                 return True
 
@@ -670,7 +724,7 @@ class Graph(object):
         result = 1
         for node in self.nodes:
             if node.degree() > 1:
-                print('node value: ', node.value)
+                # print('node value: ', node.value)
                 #result *= math.factorial(self.number_of_leaves_from_given_node(node))
                 result *= self.number_of_symmetry_permutations_of_subtree_from_given_node(node)
 
@@ -728,7 +782,7 @@ class Graph(object):
                 if table1[key] != table2[key]:
                     return False
             return True
-        print('result: ', result)
+        # print('result: ', result)
         help_index = 0
         for index1 in range(len(result)):
             if index1 != 0 and len(help_list[help_index]) > 0:
@@ -747,8 +801,8 @@ class Graph(object):
 
         for item in help_list:
             permutations *= math.factorial(len(item))
-        print('help list: ', help_list)
-        print('number of permutations: ', permutations)
+        # print('help list: ', help_list)
+        # print('number of permutations: ', permutations)
         return permutations
 
 
@@ -863,8 +917,19 @@ class GraphGenerator:
         return result
 
 if __name__ == '__main__':
-    g = GraphGenerator.generate_star(5)
-    g.draw()
+    # g = GraphGenerator.generate_star(5)
+    # g.draw()
+    g = Graph()
+    g.insert_edge(0, 0, 1)
+    g.insert_edge(0, 1, 2)
+    g.insert_edge(0, 1, 3)
+    g.insert_edge(0, 3, 4)
+    g.insert_edge(0, 4, 5)
+    g.insert_edge(0, 4, 6)
+
+    print(g.number_of_automorphisms())
+    # g.draw('', False, '')
+
 
 
 

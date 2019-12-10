@@ -1,8 +1,9 @@
 from graph_generator import *
-import os, shutil, csv
+import os, shutil, csv, datetime
 
 FOLDER = r'./results_joining_by_node'
 FULL_CSV_PATH = FOLDER + '/results.csv'
+CREATE_IMAGES = True
 
 class UseCase():
 
@@ -58,7 +59,10 @@ class UseCase():
         if not os.path.exists(FOLDER):
             os.mkdir(FOLDER)
         for item in os.listdir(FOLDER):
-            shutil.rmtree(FOLDER + '/' + item)
+            if os.path.isdir(FOLDER + '/' + item):
+                shutil.rmtree(FOLDER + '/' + item)
+            else:
+                os.remove(FOLDER + '/' + item)
 
         if n < 2:
             return
@@ -75,12 +79,11 @@ class UseCase():
 
         with open(FULL_CSV_PATH, 'w', newline='') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=';')
-            csv_writer.writerow(['First', 'Second'])
             for i in range(len(all_graphs)):
                 for j in range(i, len(all_graphs)):
                     if all_graphs[i].number_of_nodes() < all_graphs[j].number_of_nodes():
                         max_iteration = get_max_folder_iteration(str(all_graphs[i].number_of_nodes()) + '_' + str(all_graphs[j].number_of_nodes()))
-                        print('max iteration: ', max_iteration)
+                        # print('max iteration: ', max_iteration)
                         new_folder = FOLDER + r'/' + str(all_graphs[i].number_of_nodes()) + '_' + \
                                      str(all_graphs[j].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
                         os.mkdir(new_folder)
@@ -94,18 +97,29 @@ class UseCase():
                         result = GraphGenerator.join_graphs_by_node_all_possibilities(all_graphs[i], all_graphs[j])
                     else:
                         result = GraphGenerator.join_graphs_by_edge_all_possibilities(all_graphs[i], all_graphs[j])
-                    all_graphs[i].draw('First graph to be joined', True, new_folder + '/first.jpg')
-                    all_graphs[j].draw('Second graph to be joined', True, new_folder + '/second.jpg')
-                    csv_writer.writerow([str(all_graphs[i].number_of_automorphisms()), str(all_graphs[j].number_of_automorphisms())])
-                    csv_writer.writerow([' '])
-                    csv_writer.writerow(['Result tree'])
+
+                    if CREATE_IMAGES:
+                        all_graphs[i].draw('First graph to be joined', True, new_folder + '/first.jpg')
+                        all_graphs[j].draw('Second graph to be joined', True, new_folder + '/second.jpg')
+                    csv_writer.writerow(['', '', ''])
+                    csv_writer.writerow(['First', 'Second', 'Result tree'])
                     image_file_count = 0
                     for g in result:
-                        g.draw('Result from joining 2 graphs', True, new_folder + '/' + str(image_file_count) + '.jpg')
+                        if CREATE_IMAGES:
+                            g.draw('Result from joining 2 graphs', True, new_folder + '/' + str(image_file_count) + '.jpg')
+                        if image_file_count == 0:
+                            csv_writer.writerow(
+                                [str(all_graphs[i].number_of_automorphisms()) + '(' + str(all_graphs[i].number_of_nodes()) + ')',
+                                 str(all_graphs[j].number_of_automorphisms()) + '(' + str(all_graphs[j].number_of_nodes()) + ')',
+                                 str(g.number_of_automorphisms()) + '(' + str(g.number_of_nodes()) + ')'])
+                        else:
+                            csv_writer.writerow([' ', ' ', str(g.number_of_automorphisms()) + '(' + str(g.number_of_nodes()) + ')'])
                         image_file_count += 1
-                        csv_writer.writerow([str(g.number_of_automorphisms())])
+
 
 
 if __name__ == '__main__':
-    UseCase.generate_graphs_iteratively_by_joining(6)
+    start = datetime.datetime.now()
+    UseCase.generate_graphs_iteratively_by_joining(5)
+    print('Duration: ', datetime.datetime.now() - start)
     # result = UseCase.join_2_simple_graphs2()
