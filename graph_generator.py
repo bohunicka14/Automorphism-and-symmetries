@@ -5,7 +5,9 @@ import tkinter
 from collections import Counter
 from tkinter import *
 from PIL import ImageGrab, Image, ImageDraw, ImageFont
-import threading, time
+import os
+import shutil
+
 # import numpy
 # import matplotlib.pyplot as plt
 
@@ -143,7 +145,15 @@ class Graph(object):
         ret.sort(reverse=True)
         return ret
 
-    def degree__number_of_leaves_as_child_sequence(self):
+    def degree__number_of_leaves_as_nth_child_sequence(self, n):
+        def children(node_array):
+            result = []
+            for node in node_array:
+                for edge in node.edges:
+                    child = edge.node_to if node != edge.node_to else edge.node_from
+                    result.append(child)
+            return result
+
         def number_of_leaves_as_childs(node):
             number = 0
             for edge in node.edges:
@@ -152,15 +162,72 @@ class Graph(object):
                     number += 1
             return number
 
+        def number_of_leaves_as_nth_childs(node, n):
+            number = 0
+            node_array = [node]
+            for i in range(n-1):
+                node_array = children(node_array)
+            for child in node_array:
+                number += number_of_leaves_as_childs(child)
+
+            return number
+
         _dict = dict()
         for node in self.nodes:
             if node.degree() not in _dict:
-                _dict[node.degree] = Counter(str(number_of_leaves_as_childs(node)))
+                _dict[node.degree()] = Counter(str(number_of_leaves_as_nth_childs(node, n)))
             else:
-                dict[node.degree].update(str(number_of_leaves_as_childs(node)))
+                _dict[node.degree()].update(str(number_of_leaves_as_nth_childs(node, n)))
 
         return _dict
 
+
+    # def degree__number_of_leaves_as_grandchild_sequence(self):
+    #     def number_of_leaves_as_childs(node):
+    #         number = 0
+    #         for edge in node.edges:
+    #             child = edge.node_to if node != edge.node_to else edge.node_from
+    #             if child.is_leaf():
+    #                 number += 1
+    #         return number
+    #
+    #     def number_of_leaves_as_grandchilds(node):
+    #         number = 0
+    #         children = []
+    #         for edge in node.edges:
+    #             child = edge.node_to if node != edge.node_to else edge.node_from
+    #             children.append(child)
+    #
+    #         for child in children:
+    #             number += number_of_leaves_as_childs(child)
+    #         return number
+    #
+    #     _dict = dict()
+    #     for node in self.nodes:
+    #         if node.degree() not in _dict:
+    #             _dict[node.degree()] = Counter(str(number_of_leaves_as_grandchilds(node)))
+    #         else:
+    #             _dict[node.degree()].update(str(number_of_leaves_as_grandchilds(node)))
+    #
+    #     return _dict
+
+    # def degree__number_of_leaves_as_child_sequence(self):
+    #     def number_of_leaves_as_childs(node):
+    #         number = 0
+    #         for edge in node.edges:
+    #             child = edge.node_to if node != edge.node_to else edge.node_from
+    #             if child.is_leaf():
+    #                 number += 1
+    #         return number
+    #
+    #     _dict = dict()
+    #     for node in self.nodes:
+    #         if node.degree() not in _dict:
+    #             _dict[node.degree()] = Counter(str(number_of_leaves_as_childs(node)))
+    #         else:
+    #             _dict[node.degree()].update(str(number_of_leaves_as_childs(node)))
+    #
+    #     return _dict
 
     def check_k_regularity(self, k):
         for node in self.nodes:
@@ -474,19 +541,6 @@ class Graph(object):
         # color
         return True
 
-    def compare_degree__number_of_leaves_as_child_sequence(self, g):
-        this = self.degree__number_of_leaves_as_child_sequence()
-        other = g.degree__number_of_leaves_as_child_sequence()
-        if len(this) != len(other):
-            return False
-        for key,value in this.items():
-            try:
-                if other[key] != this[key]:
-                    return False
-            except KeyError:
-                return False
-        return True
-
     def is_isomorphic(self, g):
         if self.number_of_nodes() != g.number_of_nodes():
             return False
@@ -500,11 +554,92 @@ class Graph(object):
             return False
         if self.parent_sequence() != g.parent_sequence():
             return False
-        # if self.compare_degree__number_of_leaves_as_child_sequence(g) == False:
+        # if not self.is_degree__number_of_leaves_as_child_sequence_equal(g):
         #     return False
+        # if not self.is_degree__number_of_leaves_as_grandchild_sequence_equal(g):
+        #     return False
+        if not self.is_degree__number_of_leaves_as_nth_child_sequence_equal(g, 1):
+            return False
+        if not self.is_degree__number_of_leaves_as_nth_child_sequence_equal(g, 2):
+            return False
+        if self.number_of_nodes() >= 10:
+            if not self.is_degree__number_of_leaves_as_nth_child_sequence_equal(g, 3):
+                return False
+        if self.number_of_nodes() >= 12:
+            if not self.is_degree__number_of_leaves_as_nth_child_sequence_equal(g, 4):
+                return False
         # todo: add other tests
 
         return True
+
+    def is_degree__number_of_leaves_as_nth_child_sequence_equal(self, g, n):
+        this = self.degree__number_of_leaves_as_nth_child_sequence(n)
+        other = g.degree__number_of_leaves_as_nth_child_sequence(n)
+
+        if len(this) != len(other):
+            return False
+        for key, value in this.items():
+            try:
+                if other[key] != this[key]:
+                    return False
+            except KeyError:
+                return False
+        return True
+
+    # def is_degree__number_of_leaves_as_grandchild_sequence_equal(self, g):
+    #     this = self.degree__number_of_leaves_as_grandchild_sequence()
+    #     other = g.degree__number_of_leaves_as_grandchild_sequence()
+    #
+    #     if len(this) != len(other):
+    #         return False
+    #     for key, value in this.items():
+    #         try:
+    #             if other[key] != this[key]:
+    #                 return False
+    #         except KeyError:
+    #             return False
+    #     return True
+
+    # def is_degree__number_of_leaves_as_child_sequence_equal(self, g):
+    #     this = self.degree__number_of_leaves_as_child_sequence()
+    #     other = g.degree__number_of_leaves_as_child_sequence()
+    #
+    #     if len(this) != len(other):
+    #         return False
+    #     for key, value in this.items():
+    #         try:
+    #             if other[key] != this[key]:
+    #                 return False
+    #         except KeyError:
+    #             return False
+    #     return True
+        # ========================================================================
+        # this = self.degree__number_of_leaves_as_child_sequence()
+        # other = g.degree__number_of_leaves_as_child_sequence()
+        #
+        # if len(this) != len(other):
+        #     if self.number_of_nodes() == 8 and g.number_of_nodes() == 8:
+        #         self.draw('1: False = ' + str(this), True, r'./debug/' + str(len(os.listdir(r'./debug'))+1) + '.jpg')
+        #         g.draw('2: False = ' + str(other), True, r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
+        #     return False
+        # for key, value in this.items():
+        #     try:
+        #         if other[key] != this[key]:
+        #             if self.number_of_nodes() == 8 and g.number_of_nodes() == 8:
+        #                 self.draw('1: False = ' + str(this), True,
+        #                           r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
+        #                 g.draw('2: False = ' + str(other), True, r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
+        #             return False
+        #     except KeyError:
+        #         if self.number_of_nodes() == 8 and g.number_of_nodes() == 8:
+        #             self.draw('1: False = ' + str(this), True, r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
+        #             g.draw('2: False = ' + str(other), True, r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
+        #         return False
+        #
+        # if self.number_of_nodes() == 8 and g.number_of_nodes() == 8:
+        #     self.draw('1: True = ' + str(this), True, r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
+        #     g.draw('2: True = ' + str(other), True, r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
+        # return True
 
     def __repr__(self):
         result = ''
@@ -918,20 +1053,35 @@ class GraphGenerator:
 
 if __name__ == '__main__':
     # g = GraphGenerator.generate_star(5)
-    # g.draw()
-    g = Graph()
-    g.insert_edge(0, 0, 1)
-    g.insert_edge(0, 1, 2)
-    g.insert_edge(0, 1, 3)
-    g.insert_edge(0, 3, 4)
-    g.insert_edge(0, 4, 5)
-    g.insert_edge(0, 4, 6)
+    # g.draw('', False)
+    # g = Graph()
+    # g.insert_edge(0, 0, 1)
+    # g.insert_edge(0, 1, 2)
+    # g.insert_edge(0, 1, 3)
+    # g.insert_edge(0, 3, 4)
+    # g.insert_edge(0, 4, 5)
+    # g.insert_edge(0, 4, 6)
+    #
+    # print(g.number_of_automorphisms())
+    # # g.draw('', False, '')
+    for item in os.listdir(r'./debug'):
+        if os.path.isdir(r'./debug' + '/' + item):
+            shutil.rmtree(r'./debug' + '/' + item)
+        else:
+            os.remove(r'./debug' + '/' + item)
 
-    print(g.number_of_automorphisms())
-    # g.draw('', False, '')
-
-
-
+    path = GraphGenerator.generate_path(4)
+    star = GraphGenerator.generate_star(4)
+    out = GraphGenerator.generate_isomorphic_graphs([path, star])
+    # 5 nodes
+    out = GraphGenerator.generate_isomorphic_graphs(out)
+    # 6 nodes
+    out = GraphGenerator.generate_isomorphic_graphs(out)
+    # 7 nodes
+    out = GraphGenerator.generate_isomorphic_graphs(out)
+    # 8 nodes
+    # out = GraphGenerator.generate_isomorphic_graphs(out)
+    # 9 nodes
 
 
 

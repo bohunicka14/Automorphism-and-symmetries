@@ -105,6 +105,24 @@ class TestTreeIsomorphisms(unittest.TestCase):
         out = GraphGenerator.generate_isomorphic_graphs(out)
         # 9 nodes
         self.assertEqual(47, len(out))
+        out = GraphGenerator.generate_isomorphic_graphs(out)
+        # 10 nodes
+        self.assertEqual(106, len(out))
+        out = GraphGenerator.generate_isomorphic_graphs(out)
+        # 11 nodes
+        self.assertEqual(235, len(out))
+        out = GraphGenerator.generate_isomorphic_graphs(out)
+        # 12 nodes
+        self.assertEqual(551, len(out))
+        # out = GraphGenerator.generate_isomorphic_graphs(out)
+        # # 13 nodes
+        # self.assertEqual(1301, len(out))
+        # out = GraphGenerator.generate_isomorphic_graphs(out)
+        # # 14 nodes
+        # self.assertEqual(3159, len(out))
+        # out = GraphGenerator.generate_isomorphic_graphs(out)
+        # # 15 nodes
+        # self.assertEqual(7741, len(out))
 
 
 class TestTreeJoining(unittest.TestCase):
