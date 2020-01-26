@@ -1,0 +1,26 @@
+Complete iterative generating and aut counting:
+up to 5 nodes:
+	no images: 00:00:00.640581
+	with images: 00:00:03.843641
+
+up to 6 nodes:
+	no images: 00:00:02.290173
+	with images: 00:00:21.791980
+
+up to 7 nodes:
+	no images: 00:00:17.152600
+	with images: 00:01:19.884745
+
+up to 8 nodes:
+	no images: 00:02:04.251550
+	with images: 0:08:42.834083
+
+up to 9 nodes:
+	no images: 00:11:17.051562
+	with images: 
+
+Generating non isomorphic trees:
+11 nodes:
+12 nodes: 0:00:14.897867
+13 nodes: 0:01:17.583398
+14 nodes: 

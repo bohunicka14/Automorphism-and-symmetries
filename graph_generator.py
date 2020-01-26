@@ -7,6 +7,7 @@ from tkinter import *
 from PIL import ImageGrab, Image, ImageDraw, ImageFont
 import os
 import shutil
+import datetime
 
 # import numpy
 # import matplotlib.pyplot as plt
@@ -964,7 +965,7 @@ class GraphGenerator:
         return g
 
     @staticmethod
-    def generate_isomorphic_graphs(graphs):
+    def generate_non_isomorphic_graphs(graphs):
         output = []
         for g in graphs:
             num = g.number_of_nodes()
@@ -1036,7 +1037,7 @@ class GraphGenerator:
     @staticmethod
     def join_graphs_by_edge_all_possibilities(g1, g2):
         result = []
-        if g1.number_of_nodes >= g2.number_of_nodes():
+        if g1.number_of_nodes() >= g2.number_of_nodes():
             for g1_node in g1.nodes:
                 for g2_node in g2.nodes:
                     new_graph = GraphGenerator.join_graphs_by_edge(g1, g2, g1_node, g2_node)
@@ -1052,36 +1053,75 @@ class GraphGenerator:
         return result
 
 if __name__ == '__main__':
-    # g = GraphGenerator.generate_star(5)
-    # g.draw('', False)
+    # pass
     # g = Graph()
-    # g.insert_edge(0, 0, 1)
-    # g.insert_edge(0, 1, 2)
+    # g.insert_edge(0, 0, 3)
     # g.insert_edge(0, 1, 3)
+    # g.insert_edge(0, 2, 3)
     # g.insert_edge(0, 3, 4)
     # g.insert_edge(0, 4, 5)
-    # g.insert_edge(0, 4, 6)
     #
-    # print(g.number_of_automorphisms())
-    # # g.draw('', False, '')
-    for item in os.listdir(r'./debug'):
-        if os.path.isdir(r'./debug' + '/' + item):
-            shutil.rmtree(r'./debug' + '/' + item)
-        else:
-            os.remove(r'./debug' + '/' + item)
+    # print(g.parent_sequence())
+    # g.draw('', False, '')
+
+    # =================================================
+    # for item in os.listdir(r'./debug'):
+    #     if os.path.isdir(r'./debug' + '/' + item):
+    #         shutil.rmtree(r'./debug' + '/' + item)
+    #     else:
+    #         os.remove(r'./debug' + '/' + item)
+    #
+    # path = GraphGenerator.generate_path(4)
+    # star = GraphGenerator.generate_star(4)
+    # out = GraphGenerator.generate_non_isomorphic_graphs([path, star])
+    # # 5 nodes
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # # 6 nodes
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # # 7 nodes
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # # 8 nodes
+    # # out = GraphGenerator.generate_isomorphic_graphs(out)
+    # # 9 nodes
+
+    start = datetime.datetime.now()
 
     path = GraphGenerator.generate_path(4)
     star = GraphGenerator.generate_star(4)
-    out = GraphGenerator.generate_isomorphic_graphs([path, star])
+    out = GraphGenerator.generate_non_isomorphic_graphs([path, star])
     # 5 nodes
-    out = GraphGenerator.generate_isomorphic_graphs(out)
+    # self.assertEqual(3, len(out))
+    out = GraphGenerator.generate_non_isomorphic_graphs(out)
     # 6 nodes
-    out = GraphGenerator.generate_isomorphic_graphs(out)
+    # self.assertEqual(6, len(out))
+    out = GraphGenerator.generate_non_isomorphic_graphs(out)
     # 7 nodes
-    out = GraphGenerator.generate_isomorphic_graphs(out)
+    # self.assertEqual(11, len(out))
+    out = GraphGenerator.generate_non_isomorphic_graphs(out)
     # 8 nodes
-    # out = GraphGenerator.generate_isomorphic_graphs(out)
+    # self.assertEqual(23, len(out))
+    out = GraphGenerator.generate_non_isomorphic_graphs(out)
     # 9 nodes
-
+    # self.assertEqual(47, len(out))
+    out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # 10 nodes
+    # self.assertEqual(106, len(out))
+    out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # 11 nodes
+    # self.assertEqual(235, len(out))
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # 12 nodes
+    # self.assertEqual(551, len(out))
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # # 13 nodes
+    # self.assertEqual(1301, len(out))
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # # 14 nodes
+    # self.assertEqual(3159, len(out))
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # # 15 nodes
+    # self.assertEqual(7741, len(out))
+    print('Duration: ', datetime.datetime.now() - start)
+    print(len(out))
 
 

@@ -1,7 +1,7 @@
 from graph_generator import *
 import os, shutil, csv, datetime
 
-FOLDER = r'./results_joining_by_node'
+FOLDER = r'./results_joining_by_edge'
 FULL_CSV_PATH = FOLDER + '/results.csv'
 CREATE_IMAGES = True
 
@@ -37,7 +37,7 @@ class UseCase():
         return result
 
     @staticmethod
-    def generate_graphs_iteratively_by_joining(n, by_node = True):
+    def generate_graphs_iteratively_by_joining(n, by_node=True):
 
         def folder_exists(name):
             for item in os.listdir(FOLDER):
@@ -72,26 +72,27 @@ class UseCase():
         # generate all non isomorphic graphs with maximum n vertices
         for i in range(n-2):
             if not isinstance(out, list):
-                out = GraphGenerator.generate_isomorphic_graphs([out])
+                out = GraphGenerator.generate_non_isomorphic_graphs([out])
             else:
-                out = GraphGenerator.generate_isomorphic_graphs(out)
+                out = GraphGenerator.generate_non_isomorphic_graphs(out)
             all_graphs.extend(out)
 
         with open(FULL_CSV_PATH, 'w', newline='') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=';')
             for i in range(len(all_graphs)):
                 for j in range(i, len(all_graphs)):
-                    if all_graphs[i].number_of_nodes() < all_graphs[j].number_of_nodes():
-                        max_iteration = get_max_folder_iteration(str(all_graphs[i].number_of_nodes()) + '_' + str(all_graphs[j].number_of_nodes()))
-                        # print('max iteration: ', max_iteration)
-                        new_folder = FOLDER + r'/' + str(all_graphs[i].number_of_nodes()) + '_' + \
-                                     str(all_graphs[j].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
-                        os.mkdir(new_folder)
-                    else:
-                        max_iteration = get_max_folder_iteration(str(all_graphs[j].number_of_nodes()) + '_' + str(all_graphs[i].number_of_nodes()))
-                        new_folder = FOLDER + r'/' + str(all_graphs[j].number_of_nodes()) + '_' + \
-                                     str(all_graphs[i].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
-                        os.mkdir(new_folder)
+                    if CREATE_IMAGES:
+                        if all_graphs[i].number_of_nodes() < all_graphs[j].number_of_nodes():
+                            max_iteration = get_max_folder_iteration(str(all_graphs[i].number_of_nodes()) + '_' + str(all_graphs[j].number_of_nodes()))
+                            # print('max iteration: ', max_iteration)
+                            new_folder = FOLDER + r'/' + str(all_graphs[i].number_of_nodes()) + '_' + \
+                                         str(all_graphs[j].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
+                            os.mkdir(new_folder)
+                        else:
+                            max_iteration = get_max_folder_iteration(str(all_graphs[j].number_of_nodes()) + '_' + str(all_graphs[i].number_of_nodes()))
+                            new_folder = FOLDER + r'/' + str(all_graphs[j].number_of_nodes()) + '_' + \
+                                         str(all_graphs[i].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
+                            os.mkdir(new_folder)
 
                     if by_node:
                         result = GraphGenerator.join_graphs_by_node_all_possibilities(all_graphs[i], all_graphs[j])
@@ -101,6 +102,7 @@ class UseCase():
                     if CREATE_IMAGES:
                         all_graphs[i].draw('First graph to be joined', True, new_folder + '/first.jpg')
                         all_graphs[j].draw('Second graph to be joined', True, new_folder + '/second.jpg')
+
                     csv_writer.writerow(['', '', ''])
                     csv_writer.writerow(['First', 'Second', 'Result tree'])
                     image_file_count = 0
@@ -120,6 +122,6 @@ class UseCase():
 
 if __name__ == '__main__':
     start = datetime.datetime.now()
-    UseCase.generate_graphs_iteratively_by_joining(5)
+    UseCase.generate_graphs_iteratively_by_joining(8, False)
     print('Duration: ', datetime.datetime.now() - start)
     # result = UseCase.join_2_simple_graphs2()

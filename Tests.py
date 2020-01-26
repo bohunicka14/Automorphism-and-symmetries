@@ -82,36 +82,36 @@ class TestTreeIsomorphisms(unittest.TestCase):
 
     def test_tree_with_2_nodes(self):
         path = GraphGenerator.generate_path(2)
-        out = GraphGenerator.generate_isomorphic_graphs([path])
+        out = GraphGenerator.generate_non_isomorphic_graphs([path])
         self.assertEqual(1, len(out))
-        out = GraphGenerator.generate_isomorphic_graphs(out)
+        out = GraphGenerator.generate_non_isomorphic_graphs(out)
         self.assertEqual(2, len(out))
 
     def test_tree_with_n_nodes(self):
         path = GraphGenerator.generate_path(4)
         star = GraphGenerator.generate_star(4)
-        out = GraphGenerator.generate_isomorphic_graphs([path, star])
+        out = GraphGenerator.generate_non_isomorphic_graphs([path, star])
         # 5 nodes
         self.assertEqual(3, len(out))
-        out = GraphGenerator.generate_isomorphic_graphs(out)
+        out = GraphGenerator.generate_non_isomorphic_graphs(out)
         # 6 nodes
         self.assertEqual(6, len(out))
-        out = GraphGenerator.generate_isomorphic_graphs(out)
+        out = GraphGenerator.generate_non_isomorphic_graphs(out)
         # 7 nodes
         self.assertEqual(11, len(out))
-        out = GraphGenerator.generate_isomorphic_graphs(out)
+        out = GraphGenerator.generate_non_isomorphic_graphs(out)
         # 8 nodes
         self.assertEqual(23, len(out))
-        out = GraphGenerator.generate_isomorphic_graphs(out)
+        out = GraphGenerator.generate_non_isomorphic_graphs(out)
         # 9 nodes
         self.assertEqual(47, len(out))
-        out = GraphGenerator.generate_isomorphic_graphs(out)
+        out = GraphGenerator.generate_non_isomorphic_graphs(out)
         # 10 nodes
         self.assertEqual(106, len(out))
-        out = GraphGenerator.generate_isomorphic_graphs(out)
+        out = GraphGenerator.generate_non_isomorphic_graphs(out)
         # 11 nodes
         self.assertEqual(235, len(out))
-        out = GraphGenerator.generate_isomorphic_graphs(out)
+        out = GraphGenerator.generate_non_isomorphic_graphs(out)
         # 12 nodes
         self.assertEqual(551, len(out))
         # out = GraphGenerator.generate_isomorphic_graphs(out)
