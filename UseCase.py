@@ -37,6 +37,28 @@ class UseCase():
         return result
 
     @staticmethod
+    def join_2_big_graphs1(n):
+        g1 = GraphGenerator.generate_big_asymemtric_tree(n)
+        g2 = GraphGenerator.generate_big_asymemtric_tree(n)
+        print('|Aut(g1)| = ', g1.number_of_automorphisms())
+        print('|Aut(g2)| = ', g2.number_of_automorphisms())
+        node1 = g1.find_node(0)
+        node2 = g2.find_node(0)
+        g = GraphGenerator.join_graphs_by_node(g1, g2, node1, node2)
+        print('|Aut(G)| = ', g.number_of_automorphisms())
+
+    @staticmethod
+    def join_2_big_graphs2(n):
+        g1 = GraphGenerator.generate_big_asymemtric_tree(n)
+        print('|Aut(g)| = ', g1.number_of_automorphisms())
+        g1.insert_edge(0, 0, g1.number_of_nodes())
+        g1.insert_edge(0, 1, g1.number_of_nodes())
+        g1.insert_edge(0, g1.number_of_nodes()-1, g1.number_of_nodes())
+        print('adding new edges')
+        print('|Aut(g)| = ', g1.number_of_automorphisms())
+        g1.draw('', False)
+
+    @staticmethod
     def generate_graphs_iteratively_by_joining(n, by_node=True):
 
         def folder_exists(name):
@@ -122,6 +144,6 @@ class UseCase():
 
 if __name__ == '__main__':
     start = datetime.datetime.now()
-    UseCase.generate_graphs_iteratively_by_joining(8, False)
+    UseCase.join_2_big_graphs1(40)
     print('Duration: ', datetime.datetime.now() - start)
     # result = UseCase.join_2_simple_graphs2()
