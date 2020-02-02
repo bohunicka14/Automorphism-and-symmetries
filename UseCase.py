@@ -46,6 +46,19 @@ class UseCase():
         node2 = g2.find_node(0)
         g = GraphGenerator.join_graphs_by_node(g1, g2, node1, node2)
         print('|Aut(G)| = ', g.number_of_automorphisms())
+        print('|V(G)| = ', g.number_of_nodes())
+
+    @staticmethod
+    def join_big_small_graph(n):
+        big = GraphGenerator.generate_big_asymemtric_tree(n)
+        small = GraphGenerator.generate_path(2)
+        small_node = small.find_node(0)
+        print('|V| = ', big.number_of_nodes())
+        print('|Aut(big)| = ', big.number_of_automorphisms())
+        print('|Aut(small)| = ', small.number_of_automorphisms())
+        for node in big.nodes:
+            g = GraphGenerator.join_graphs_by_node(big, small, node, small_node)
+            print('|Aut(result)| = ', g.number_of_automorphisms())
 
     @staticmethod
     def join_2_big_graphs2(n):
@@ -141,9 +154,8 @@ class UseCase():
                         image_file_count += 1
 
 
-
 if __name__ == '__main__':
     start = datetime.datetime.now()
-    UseCase.join_2_big_graphs1(40)
+    UseCase.join_big_small_graph(30)
     print('Duration: ', datetime.datetime.now() - start)
     # result = UseCase.join_2_simple_graphs2()
