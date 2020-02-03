@@ -37,7 +37,7 @@ class UseCase():
         return result
 
     @staticmethod
-    def join_2_big_graphs1(n):
+    def join_2_big_asymmetric_trees(n):
         g1 = GraphGenerator.generate_big_asymemtric_tree(n)
         g2 = GraphGenerator.generate_big_asymemtric_tree(n)
         print('|Aut(g1)| = ', g1.number_of_automorphisms())
@@ -61,7 +61,7 @@ class UseCase():
             print('|Aut(result)| = ', g.number_of_automorphisms())
 
     @staticmethod
-    def join_2_big_graphs2(n):
+    def create_big_almost_asymmetric_tree(n):
         g1 = GraphGenerator.generate_big_asymemtric_tree(n)
         print('|Aut(g)| = ', g1.number_of_automorphisms())
         g1.insert_edge(0, 0, g1.number_of_nodes())
@@ -156,6 +156,6 @@ class UseCase():
 
 if __name__ == '__main__':
     start = datetime.datetime.now()
-    UseCase.join_big_small_graph(30)
+    UseCase.join_2_big_asymmetric_trees(30)
     print('Duration: ', datetime.datetime.now() - start)
     # result = UseCase.join_2_simple_graphs2()

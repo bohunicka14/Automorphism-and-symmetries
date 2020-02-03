@@ -671,19 +671,19 @@ class Graph(object):
 
         return table
 
-    def draw(self, additional_info='', save_only=True, save_path=''):
+    def draw(self, additional_info='', save_only=True, save_path='', width=1000, height=600):
         if save_only and save_path == '':
             print('Path not defined!!!')
             return
-        window_width = 1000
-        window_height = 600
+        window_width = width
+        window_height = height
         drawing_width = window_width - 50
         offset_x = 50
         offset_y = 50
         pos_x = window_width / 2
         pos_y = 50
         white = (255, 255, 255)
-        black = (0,0,0)
+        black = (0, 0, 0)
         font = ImageFont.truetype(font='arialbd.ttf', size=16)
 
         if save_only:
@@ -1072,6 +1072,9 @@ class GraphGenerator:
 
 if __name__ == '__main__':
     pass
+    # g = GraphGenerator.generate_big_asymemtric_tree(30)
+    # g.draw("", True, 'big_tree.jpg', 20000, 20000)
+    # =================================================
     # g = Graph()
     # g.insert_edge(0, 0, 3)
     # g.insert_edge(0, 1, 3)
