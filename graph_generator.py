@@ -392,7 +392,7 @@ class Graph(object):
         node = self.find_node(start_node_num)
         self._clear_visited()
         ret_list = []
-        # Your code here
+
         queue = [node]
         node.visited = True
 
@@ -752,6 +752,14 @@ class Graph(object):
         else:
             main.mainloop()
 
+    def get_wolfram_input(self):
+        result = '{'
+        for edge in self.edges:
+            result += str(edge.node_from.value) + ' -> ' + str(edge.node_to.value) + ','
+            result += str(edge.node_to.value) + ' -> ' + str(edge.node_from.value) + ','
+        result = result[:-1] + '}'
+        return result
+
     def number_of_leaves_from_given_node(self, node):
         result = 0
         for edge in node.edges:
@@ -948,6 +956,25 @@ class Graph(object):
 class GraphGenerator:
 
     @staticmethod
+    def generate_random_binary_tree(n):
+        g = Graph()
+        g.insert_node(0)
+        tree = [[-1, -1]]
+        free_edges = [(0, 0), (0, 1)]
+        while g.number_of_nodes() < n:
+            e = random.choice(free_edges)
+            node, child = e
+            assert tree[node][child] == -1
+
+            k = g.number_of_nodes()
+            tree.append([-1, -1])
+            g.insert_edge(0, node, k)
+            free_edges.extend([(k, 0), (k, 1)])
+            free_edges.remove(e)
+
+        return g
+
+    @staticmethod
     def generate_star(n):
         g = Graph()
         for i in range(1, n):
@@ -1072,7 +1099,19 @@ class GraphGenerator:
 
 if __name__ == '__main__':
     pass
-    # g = GraphGenerator.generate_big_asymemtric_tree(30)
+    # g = GraphGenerator.generate_big_asymemtric_tree(20)
+    # g = Graph()
+    # g.insert_edge(0, 1, 2)
+    # g.insert_edge(0, 2, 3)
+    # g.insert_edge(0, 2, 4)
+    # g.insert_edge(0, 4, 5)
+    # g.insert_edge(0, 4, 6)
+    # print(g.number_of_automorphisms())
+    # print(g.get_wolfram_input())
+
+    # g = GraphGenerator.generate_random_binary_tree(20)
+    # g.draw("", True, 'binary_tree.jpg', 2000, 600)
+
     # g.draw("", True, 'big_tree.jpg', 20000, 20000)
     # =================================================
     # g = Graph()

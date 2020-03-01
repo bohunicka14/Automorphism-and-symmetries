@@ -49,9 +49,45 @@ class UseCase():
         print('|V(G)| = ', g.number_of_nodes())
 
     @staticmethod
-    def join_big_small_graph(n):
-        big = GraphGenerator.generate_big_asymemtric_tree(n)
-        small = GraphGenerator.generate_path(2)
+    def join_big_small_graph_version_path(n1, n2):
+        big = GraphGenerator.generate_big_asymemtric_tree(n1)
+        small = GraphGenerator.generate_path(n2)
+        small_node = small.find_node(0)
+        print('|V| = ', big.number_of_nodes())
+        print('|Aut(big)| = ', big.number_of_automorphisms())
+        print('|Aut(small)| = ', small.number_of_automorphisms())
+        for node in big.nodes:
+            g = GraphGenerator.join_graphs_by_node(big, small, node, small_node)
+            print('|Aut(result)| = ', g.number_of_automorphisms())
+
+    @staticmethod
+    def join_big_small_graph_version_star(n1, n2):
+        big = GraphGenerator.generate_big_asymemtric_tree(n1)
+        small = GraphGenerator.generate_star(n2)
+        small_node = small.find_node(0)
+        print('|V| = ', big.number_of_nodes())
+        print('|Aut(big)| = ', big.number_of_automorphisms())
+        print('|Aut(small)| = ', small.number_of_automorphisms())
+        for node in big.nodes:
+            g = GraphGenerator.join_graphs_by_node(big, small, node, small_node)
+            print('|Aut(result)| = ', g.number_of_automorphisms())
+
+    @staticmethod
+    def join_big_small_graph_version_random_binary_tree_and_star(n1, n2):
+        big = GraphGenerator.generate_random_binary_tree(n1)
+        small = GraphGenerator.generate_star(n2)
+        small_node = small.find_node(0)
+        print('|V| = ', big.number_of_nodes())
+        print('|Aut(big)| = ', big.number_of_automorphisms())
+        print('|Aut(small)| = ', small.number_of_automorphisms())
+        for node in big.nodes:
+            g = GraphGenerator.join_graphs_by_node(big, small, node, small_node)
+            print('|Aut(result)| = ', g.number_of_automorphisms())
+
+    @staticmethod
+    def join_big_small_graph_version_random_binary_tree_and_path(n1, n2):
+        big = GraphGenerator.generate_random_binary_tree(n1)
+        small = GraphGenerator.generate_path(n2)
         small_node = small.find_node(0)
         print('|V| = ', big.number_of_nodes())
         print('|Aut(big)| = ', big.number_of_automorphisms())
@@ -156,6 +192,6 @@ class UseCase():
 
 if __name__ == '__main__':
     start = datetime.datetime.now()
-    UseCase.join_2_big_asymmetric_trees(30)
+    UseCase.join_big_small_graph_version_random_binary_tree_and_star(30, 10)
     print('Duration: ', datetime.datetime.now() - start)
     # result = UseCase.join_2_simple_graphs2()
