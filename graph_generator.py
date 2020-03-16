@@ -5,6 +5,8 @@ import tkinter
 from collections import Counter
 from tkinter import *
 from PIL import ImageGrab, Image, ImageDraw, ImageFont
+from networkx import random_tree, draw
+import matplotlib.pyplot as plt
 import os
 import shutil
 import datetime
@@ -975,6 +977,18 @@ class GraphGenerator:
         return g
 
     @staticmethod
+    def generate_random_tree(n):
+        tree = random_tree(n)
+        g = Graph()
+        for edge in tree.edges:
+            g.insert_edge(0, edge[0], edge[1])
+        # draw(tree)
+        # plt.show()
+        # g.draw('', False)
+        del tree
+        return g
+
+    @staticmethod
     def generate_star(n):
         g = Graph()
         for i in range(1, n):
@@ -1008,6 +1022,19 @@ class GraphGenerator:
             for j in range(i):
                 g.insert_edge(0, g.number_of_nodes()-1, g.number_of_nodes())
         return g
+
+    @staticmethod
+    def create_big_almost_asymmetric_tree(n):
+        g1 = GraphGenerator.generate_big_asymemtric_tree(n)
+        print('|Aut(g)| = ', g1.number_of_automorphisms())
+        g1.insert_edge(0, 0, g1.number_of_nodes())
+        g1.insert_edge(0, 1, g1.number_of_nodes())
+        g1.insert_edge(0, g1.number_of_nodes() - 1, g1.number_of_nodes())
+        print('adding new edges')
+        print('|Aut(g)| = ', g1.number_of_automorphisms())
+        g1.draw('', False)
+
+        return g1
 
     @staticmethod
     def generate_non_isomorphic_graphs(graphs):
@@ -1098,7 +1125,7 @@ class GraphGenerator:
         return result
 
 if __name__ == '__main__':
-    pass
+    GraphGenerator.generate_random_tree(10)
     # g = GraphGenerator.generate_big_asymemtric_tree(20)
     # g = Graph()
     # g.insert_edge(0, 1, 2)

@@ -97,15 +97,28 @@ class UseCase():
             print('|Aut(result)| = ', g.number_of_automorphisms())
 
     @staticmethod
-    def create_big_almost_asymmetric_tree(n):
-        g1 = GraphGenerator.generate_big_asymemtric_tree(n)
-        print('|Aut(g)| = ', g1.number_of_automorphisms())
-        g1.insert_edge(0, 0, g1.number_of_nodes())
-        g1.insert_edge(0, 1, g1.number_of_nodes())
-        g1.insert_edge(0, g1.number_of_nodes()-1, g1.number_of_nodes())
-        print('adding new edges')
-        print('|Aut(g)| = ', g1.number_of_automorphisms())
-        g1.draw('', False)
+    def join_2_random_binary_trees(n1, n2):
+        big = GraphGenerator.generate_random_binary_tree(n1)
+        small = GraphGenerator.generate_random_binary_tree(n2)
+        small_node = small.find_node(0)
+        print('|V| = ', big.number_of_nodes())
+        print('|Aut(big)| = ', big.number_of_automorphisms())
+        print('|Aut(small)| = ', small.number_of_automorphisms())
+        for node in big.nodes:
+            g = GraphGenerator.join_graphs_by_node(big, small, node, small_node)
+            print('|Aut(result)| = ', g.number_of_automorphisms())
+
+    @staticmethod
+    def join_2_random_trees(n1, n2):
+        big = GraphGenerator.generate_random_tree(n1)
+        small = GraphGenerator.generate_random_tree(n2)
+        small_node = small.find_node(0)
+        print('|V| = ', big.number_of_nodes())
+        print('|Aut(big)| = ', big.number_of_automorphisms())
+        print('|Aut(small)| = ', small.number_of_automorphisms())
+        for node in big.nodes:
+            g = GraphGenerator.join_graphs_by_node(big, small, node, small_node)
+            print('|Aut(result)| = ', g.number_of_automorphisms())
 
     @staticmethod
     def generate_graphs_iteratively_by_joining(n, by_node=True):
@@ -192,6 +205,6 @@ class UseCase():
 
 if __name__ == '__main__':
     start = datetime.datetime.now()
-    UseCase.join_big_small_graph_version_random_binary_tree_and_star(30, 10)
+    UseCase.join_2_random_trees(100, 100)
     print('Duration: ', datetime.datetime.now() - start)
     # result = UseCase.join_2_simple_graphs2()
