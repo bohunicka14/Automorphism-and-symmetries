@@ -2,6 +2,7 @@ import unittest
 import math
 import UseCase
 from UseCase import *
+import nautyRunner
 from graph_generator import *
 
 class TestInsertingEdges(unittest.TestCase):
@@ -140,6 +141,27 @@ class TestTreeJoining(unittest.TestCase):
         self.assertEqual(g1.number_of_nodes() + g2.number_of_nodes(), result.number_of_nodes())
         self.assertEqual(g1.number_of_edges() + g2.number_of_edges() + 1, result.number_of_edges())
         self.assertEqual(2, result.number_of_automorphisms())
+
+class TestNumberOfAutomorphisms(unittest.TestCase):
+
+    def test_big_asymmetric_tree(self):
+        tree = GraphGenerator.generate_big_asymemtric_tree(30)
+        tree.serialize_to_nauty_format()
+        self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
+
+    def test_random_binary_tree(self):
+        tree = GraphGenerator.generate_random_binary_tree(40)
+        tree.serialize_to_nauty_format()
+        self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
+
+    def test_random_tree(self):
+        tree = GraphGenerator.generate_random_tree(20)
+        tree.serialize_to_nauty_format()
+        a = tree.number_of_automorphisms()
+        b = nautyRunner.run()
+        print('my result: ', str(a))
+        print('nauty: ', str(b))
+        self.assertEqual(a, b)
 
 if __name__ == '__main__':
     unittest.main()

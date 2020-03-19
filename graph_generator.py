@@ -4,7 +4,7 @@ import copy
 import tkinter
 from collections import Counter
 from tkinter import *
-from PIL import ImageGrab, Image, ImageDraw, ImageFont
+# from PIL import ImageGrab, Image, ImageDraw, ImageFont # on linux commented out
 from networkx import random_tree, draw
 import matplotlib.pyplot as plt
 import os
@@ -673,6 +673,14 @@ class Graph(object):
 
         return table
 
+    def serialize_to_nauty_format(self, file='./nauty26r12/mygraph.dre'):
+        with open(file, 'w') as f:
+            f.write('n={} g\n'.format(str(self.number_of_nodes())))
+            for node in self.nodes:
+                f.write('  {} :  {};\n'.format(str(int(node.value)), ' '.join(map(lambda x: str(x.value), node.get_neighbours()))))
+            f.write('&&\n')
+
+
     def draw(self, additional_info='', save_only=True, save_path='', width=1000, height=600):
         if save_only and save_path == '':
             print('Path not defined!!!')
@@ -982,8 +990,9 @@ class GraphGenerator:
         g = Graph()
         for edge in tree.edges:
             g.insert_edge(0, edge[0], edge[1])
-        # draw(tree)
+        draw(tree)
         # plt.show()
+        plt.savefig('plt.png')
         # g.draw('', False)
         del tree
         return g
@@ -1125,7 +1134,10 @@ class GraphGenerator:
         return result
 
 if __name__ == '__main__':
-    GraphGenerator.generate_random_tree(10)
+    tree = GraphGenerator.generate_path(5)
+    tree.serialize_to_nauty_format()
+
+    # GraphGenerator.generate_random_tree(10)
     # g = GraphGenerator.generate_big_asymemtric_tree(20)
     # g = Graph()
     # g.insert_edge(0, 1, 2)
