@@ -1,4 +1,5 @@
 import unittest
+import random
 import math
 import UseCase
 from UseCase import *
@@ -149,19 +150,34 @@ class TestNumberOfAutomorphisms(unittest.TestCase):
         tree.serialize_to_nauty_format()
         self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
 
-    def test_random_binary_tree(self):
-        tree = GraphGenerator.generate_random_binary_tree(40)
+    def test_big_almost_asymmetric_tree(self):
+        tree = GraphGenerator.generate_big_almost_asymmetric_tree(30)
         tree.serialize_to_nauty_format()
         self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
 
-    def test_random_tree(self):
-        tree = GraphGenerator.generate_random_tree(20)
-        tree.serialize_to_nauty_format()
-        a = tree.number_of_automorphisms()
-        b = nautyRunner.run()
-        print('my result: ', str(a))
-        print('nauty: ', str(b))
-        self.assertEqual(a, b)
+    def test_small_random_binary_trees(self):
+        for i in range(10):
+            tree = GraphGenerator.generate_random_binary_tree(random.randint(4, 21))
+            tree.serialize_to_nauty_format()
+            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
+
+    def test_small_random_trees(self):
+        for i in range(10):
+            tree = GraphGenerator.generate_random_tree(random.randint(4, 21))
+            tree.serialize_to_nauty_format()
+            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
+
+    def test_big_random_binary_trees(self):
+        for i in range(10):
+            tree = GraphGenerator.generate_random_binary_tree(random.randint(40, 81))
+            tree.serialize_to_nauty_format()
+            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
+
+    def test_big_random_trees(self):
+        for i in range(10):
+            tree = GraphGenerator.generate_random_tree(random.randint(40, 81))
+            tree.serialize_to_nauty_format()
+            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
 
 if __name__ == '__main__':
     unittest.main()

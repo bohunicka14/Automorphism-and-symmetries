@@ -2,7 +2,7 @@ import random
 import math
 import copy
 import tkinter
-from collections import Counter
+from collections import Counter, OrderedDict
 from tkinter import *
 # from PIL import ImageGrab, Image, ImageDraw, ImageFont # on linux commented out
 from networkx import random_tree, draw
@@ -675,9 +675,15 @@ class Graph(object):
 
     def serialize_to_nauty_format(self, file='./nauty26r12/mygraph.dre'):
         with open(file, 'w') as f:
-            f.write('n={} g\n'.format(str(self.number_of_nodes())))
+            f.write('n={} $=0 g\n'.format(str(self.number_of_nodes())))
+            neighbours = dict()
             for node in self.nodes:
-                f.write('  {} :  {};\n'.format(str(int(node.value)), ' '.join(map(lambda x: str(x.value), node.get_neighbours()))))
+                neighbours[int(node.value)] = ' '.join(map(lambda x: str(x.value), node.get_neighbours()))
+
+            neighbours = OrderedDict(sorted(neighbours.items()))
+
+            for key, value in neighbours.items():
+                f.write('  {} :  {};\n'.format(str(int(key)), value))
             f.write('&&\n')
 
 
@@ -694,9 +700,9 @@ class Graph(object):
         pos_y = 50
         white = (255, 255, 255)
         black = (0, 0, 0)
-        font = ImageFont.truetype(font='arialbd.ttf', size=16)
 
         if save_only:
+            font = ImageFont.truetype(font='arialbd.ttf', size=16)
             image = Image.new("RGB", (window_width, window_height), white)
             draw = ImageDraw.Draw(image)
         else:
@@ -992,7 +998,7 @@ class GraphGenerator:
             g.insert_edge(0, edge[0], edge[1])
         draw(tree)
         # plt.show()
-        plt.savefig('plt.png')
+        # plt.savefig('plt.png')
         # g.draw('', False)
         del tree
         return g
@@ -1033,15 +1039,15 @@ class GraphGenerator:
         return g
 
     @staticmethod
-    def create_big_almost_asymmetric_tree(n):
+    def generate_big_almost_asymmetric_tree(n):
         g1 = GraphGenerator.generate_big_asymemtric_tree(n)
-        print('|Aut(g)| = ', g1.number_of_automorphisms())
+        # print('|Aut(g)| = ', g1.number_of_automorphisms())
         g1.insert_edge(0, 0, g1.number_of_nodes())
         g1.insert_edge(0, 1, g1.number_of_nodes())
         g1.insert_edge(0, g1.number_of_nodes() - 1, g1.number_of_nodes())
-        print('adding new edges')
-        print('|Aut(g)| = ', g1.number_of_automorphisms())
-        g1.draw('', False)
+        # print('adding new edges')
+        # print('|Aut(g)| = ', g1.number_of_automorphisms())
+        # g1.draw('', False)
 
         return g1
 
@@ -1134,7 +1140,7 @@ class GraphGenerator:
         return result
 
 if __name__ == '__main__':
-    tree = GraphGenerator.generate_path(5)
+    tree = GraphGenerator.generate_random_tree(7)
     tree.serialize_to_nauty_format()
 
     # GraphGenerator.generate_random_tree(10)
