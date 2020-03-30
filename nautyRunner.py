@@ -16,10 +16,14 @@ def run_nauty():
 def nauty_get_aut_group_size():
     run_nauty()
     stream = os.popen('grep -o "grpsize=[0-9]*" ./nauty26r12/myoutput.txt | grep -o [0-9]*')
-    return int(stream.read())
+    return_value = int(stream.read())
+    stream.close()
+    return return_value
 
 def nauty_get_aut_group():
     run_nauty()
     stream = os.popen('grep -o "([0-9]* [0-9]*)" ./nauty26r12/myoutput.txt')
-    return str(stream.read())
+    return_value = str(stream.read())
+    stream.close()
+    return return_value
 
