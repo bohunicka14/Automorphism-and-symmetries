@@ -148,36 +148,36 @@ class TestNumberOfAutomorphisms(unittest.TestCase):
     def test_big_asymmetric_tree(self):
         tree = GraphGenerator.generate_big_asymemtric_tree(30)
         tree.serialize_to_nauty_format()
-        self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
+        self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_aut_group_size())
 
     def test_big_almost_asymmetric_tree(self):
         tree = GraphGenerator.generate_big_almost_asymmetric_tree(30)
         tree.serialize_to_nauty_format()
-        self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
+        self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_aut_group_size())
 
     def test_small_random_binary_trees(self):
         for i in range(10):
             tree = GraphGenerator.generate_random_binary_tree(random.randint(4, 21))
             tree.serialize_to_nauty_format()
-            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
+            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_aut_group_size())
 
     def test_small_random_trees(self):
         for i in range(10):
             tree = GraphGenerator.generate_random_tree(random.randint(4, 21))
             tree.serialize_to_nauty_format()
-            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
+            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_aut_group_size())
 
     def test_big_random_binary_trees(self):
         for i in range(10):
             tree = GraphGenerator.generate_random_binary_tree(random.randint(40, 81))
             tree.serialize_to_nauty_format()
-            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
+            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_aut_group_size())
 
     def test_big_random_trees(self):
         for i in range(10):
             tree = GraphGenerator.generate_random_tree(random.randint(40, 81))
             tree.serialize_to_nauty_format()
-            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.run())
+            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_aut_group_size())
 
 if __name__ == '__main__':
     unittest.main()

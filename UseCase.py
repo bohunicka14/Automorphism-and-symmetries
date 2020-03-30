@@ -1,5 +1,6 @@
 from graph_generator import *
 import os, shutil, csv, datetime
+import nautyRunner
 
 FOLDER = r'./results_joining_by_edge'
 FULL_CSV_PATH = FOLDER + '/results.csv'
@@ -99,6 +100,21 @@ class UseCase():
             print('|Aut(result)| = ', g.number_of_automorphisms())
 
     @staticmethod
+    def test_generating_sets():
+        tree1 = GraphGenerator.generate_path(5)
+        tree2 = GraphGenerator.generate_star(6)
+        tree1.serialize_to_nauty_format()
+        result1 = nautyRunner.nauty_get_aut_group()
+        tree2.serialize_to_nauty_format()
+        result2 = nautyRunner.nauty_get_aut_group()
+        print("Path aut group: \n", result1)
+        print("Star aut group: \n", result2)
+        joined = GraphGenerator.join_graphs_by_node(tree1, tree2, tree1.nodes[0], tree2.nodes[0])
+        joined.serialize_to_nauty_format()
+        result_joined = nautyRunner.nauty_get_aut_group()
+        print("Joined tree aut group: \n", result_joined)
+
+    @staticmethod
     def generate_graphs_iteratively_by_joining(n, by_node=True):
 
         def folder_exists(name):
@@ -183,6 +199,7 @@ class UseCase():
 
 if __name__ == '__main__':
     start = datetime.datetime.now()
-    UseCase.join_2_random_trees(100, 100)
+    # UseCase.join_2_random_trees(100, 100)
+    UseCase.test_generating_sets()
     print('Duration: ', datetime.datetime.now() - start)
     # result = UseCase.join_2_simple_graphs2()
