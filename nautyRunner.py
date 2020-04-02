@@ -13,6 +13,9 @@ def run_nauty():
     nauty.stdin.write("q\n")
     nauty.stdin.close()
 
+def nauty_dre_to_dot(path):
+    os.popen('./nauty26r12/dretodot ./nauty26r12/mygraph.dre {}'.format(path))
+
 def nauty_get_aut_group_size():
     run_nauty()
     stream = os.popen('grep -o "grpsize=[0-9]*" ./nauty26r12/myoutput.txt | grep -o [0-9]*')

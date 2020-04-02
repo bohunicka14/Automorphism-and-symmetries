@@ -20,6 +20,9 @@ class Node(object):
         self.edges = []
         self.visited = False
 
+    def set_value(self, val):
+        self.value = val
+
     def degree(self):
         return len(self.edges)
 
@@ -50,6 +53,29 @@ class Graph(object):
         self.node_names = []
         self._node_map = {} # node_val / node obj
 
+    def need_to_reevaluate_node_values(self):
+        '''
+        This function returns True if all node values are in ascending order from 0 to n
+        and have offset exactly 1 between each other.
+        :return: Bool
+        '''
+        node_values_list = sorted(self._node_map.keys())
+        for i in range(len(node_values_list) - 1):
+            if node_values_list[i+1] - node_values_list[1] > 1:
+                return True
+        return False
+
+    def reevaluate_node_values(self):
+        '''
+        This function changes node values to be in ascending order with offset 1 between each node value.
+        :return: None
+        '''
+        i = 0
+        self._node_map = dict()
+        for node in self.nodes:
+            node.value = i
+            self._node_map[i] = node
+            i += 1
 
     def join_other_graph_by_node(self, my_node, other_node, other_graph, offset=0):
         for node in other_graph.nodes:
@@ -684,7 +710,7 @@ class Graph(object):
 
             for key, value in neighbours.items():
                 f.write('  {} :  {};\n'.format(str(int(key)), value))
-            f.write('&&\n')
+            f.write('$$\n')
 
 
     def draw(self, additional_info='', save_only=True, save_path='', width=1000, height=600):
@@ -1087,6 +1113,8 @@ class GraphGenerator:
                 node_g2_copy = node
 
         g1_copy.join_other_graph_by_node(node_g1_copy, node_g2_copy, g2_copy)
+        if g1_copy.need_to_reevaluate_node_values():
+            g1_copy.reevaluate_node_values()
 
         return g1_copy
 
