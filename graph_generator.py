@@ -727,7 +727,7 @@ class Graph(object):
         white = (255, 255, 255)
         black = (0, 0, 0)
 
-        if save_only:
+        if save_only and sys.platform == 'windows':
             font = ImageFont.truetype(font='arialbd.ttf', size=16)
             image = Image.new("RGB", (window_width, window_height), white)
             draw = ImageDraw.Draw(image)
@@ -743,7 +743,7 @@ class Graph(object):
             already_drawn_nodes_table[key] = 0
 
         def draw_node(node, posx, posy, parent_x, parent_y):
-            if save_only:
+            if save_only and sys.platform == 'windows':
                 draw.ellipse([posx - 15, posy - 15, posx + 15, posy + 15], width=3, outline=black)
                 draw.text([posx-4, posy-7], text=str(node.value), font=font, fill=black)
                 draw.line([posx, posy, parent_x, parent_y], fill=black)
@@ -780,7 +780,7 @@ class Graph(object):
                                   'parent_posy': node['posy'],
                                   'level': node['level']+1})
 
-        if save_only:
+        if save_only and sys.platform == 'windows':
             draw.text([60, window_height - 50], text='Aut(G) = '+str(self.number_of_automorphisms()), font=font, fill=black)
             draw.text([150, window_height - 80], text=additional_info, font=font, fill=black)
         else:
@@ -789,7 +789,7 @@ class Graph(object):
             #                    font='helvetica 12 bold')
             canvas.create_text(150, window_height - 80, text=additional_info, font='helvetica 12 bold')
 
-        if save_only:
+        if save_only and sys.platform == 'windows':
             image.save(save_path)
         else:
             main.mainloop()

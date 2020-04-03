@@ -2,7 +2,7 @@ from graph_generator import *
 import os, shutil, csv, datetime
 import nautyRunner
 
-FOLDER = r'./results_joining_by_edge'
+FOLDER = r'./results_joining_by_node_linux'
 FULL_CSV_PATH = FOLDER + '/results.csv'
 CREATE_IMAGES = True
 
@@ -178,28 +178,88 @@ class UseCase():
                         result = GraphGenerator.join_graphs_by_edge_all_possibilities(all_graphs[i], all_graphs[j])
 
                     if CREATE_IMAGES:
-                        all_graphs[i].draw('First graph to be joined', True, new_folder + '/first.jpg')
-                        all_graphs[j].draw('Second graph to be joined', True, new_folder + '/second.jpg')
+                        if sys.platform == 'windows':
+                            all_graphs[i].draw('First graph to be joined', True, new_folder + '/first.jpg')
+                            all_graphs[j].draw('Second graph to be joined', True, new_folder + '/second.jpg')
+                        elif sys.platform == 'linux':
+                            all_graphs[i].serialize_to_nauty_format()
+                            nautyRunner.nauty_dre_to_dot(new_folder + '/first.dot')
+                            all_graphs[j].serialize_to_nauty_format()
+                            nautyRunner.nauty_dre_to_dot(new_folder + '/second.dot')
 
-                    csv_writer.writerow(['', '', ''])
-                    csv_writer.writerow(['First', 'Second', 'Result tree'])
+                    if CREATE_IMAGES:
+                        csv_writer.writerow(['', '', '', '', '', '', '', '', '', '', '', ''])
+                        csv_writer.writerow(['|T1|', '|T2|', '|Joined|', '|Aut(T1)|', '|Aut(T2)|', '|Aut(Joined)|',
+                                             'Aut(T1)', 'Aut(T2)', 'Aut(Joined)', 'T1 path', 'T2 path', 'Joined path'])
+                    else:
+                        csv_writer.writerow(['', '', '', '', '', '', '', '', ''])
+                        csv_writer.writerow(['|T1|', '|T2|', '|Joined|', '|Aut(T1)|', '|Aut(T2)|', '|Aut(Joined)|',
+                                             'Aut(T1)', 'Aut(T2)', 'Aut(Joined)'])
+
                     image_file_count = 0
                     for g in result:
                         if CREATE_IMAGES:
-                            g.draw('Result from joining 2 graphs', True, new_folder + '/' + str(image_file_count) + '.jpg')
+                            if sys.platform == 'windows':
+                                g.draw('Result from joining 2 graphs', True, new_folder + '/' + str(image_file_count) + '.jpg')
+                            elif sys.platform == 'linux':
+                                g.serialize_to_nauty_format()
+                                nautyRunner.nauty_dre_to_dot(new_folder + '/' + str(image_file_count) + '.dot')
+
+                        g.serialize_to_nauty_format()
+                        joined_aut_size, joined_aut = nautyRunner.nauty_get_automorphism_group_info()
+                        joined_aut = ','.join(joined_aut.split('\n'))
+
+                        if CREATE_IMAGES:
+                            joined_path = new_folder + '/' + str(image_file_count) + '.dot'
+
                         if image_file_count == 0:
-                            csv_writer.writerow(
-                                [str(all_graphs[i].number_of_automorphisms()) + '(' + str(all_graphs[i].number_of_nodes()) + ')',
-                                 str(all_graphs[j].number_of_automorphisms()) + '(' + str(all_graphs[j].number_of_nodes()) + ')',
-                                 str(g.number_of_automorphisms()) + '(' + str(g.number_of_nodes()) + ')'])
+                            # csv_writer.writerow(
+                            #     [str(all_graphs[i].number_of_automorphisms()) + '(' + str(all_graphs[i].number_of_nodes()) + ')',
+                            #      str(all_graphs[j].number_of_automorphisms()) + '(' + str(all_graphs[j].number_of_nodes()) + ')',
+                            #      str(g.number_of_automorphisms()) + '(' + str(g.number_of_nodes()) + ')'])
+
+                            t1_size = str(all_graphs[i].number_of_nodes())
+                            t2_size = str(all_graphs[j].number_of_nodes())
+                            joined_size = str(g.number_of_nodes())
+
+                            all_graphs[i].serialize_to_nauty_format()
+                            t1_aut_size, t1_aut = nautyRunner.nauty_get_automorphism_group_info()
+                            t1_aut = ','.join(t1_aut.split('\n'))
+                            all_graphs[j].serialize_to_nauty_format()
+                            t2_aut_size, t2_aut = nautyRunner.nauty_get_automorphism_group_info()
+                            t2_aut = ','.join(t2_aut.split('\n'))
+
+                            if CREATE_IMAGES:
+                                t1_path = new_folder + '/first.dot'
+                                t2_path = new_folder + '/second.dot'
+
+                                csv_writer.writerow([t1_size, t2_size, joined_size,
+                                                     str(t1_aut_size), str(t2_aut_size), str(joined_aut_size),
+                                                     t1_aut, t2_aut, joined_aut,
+                                                     t1_path, t2_path, joined_path])
+                            else:
+                                csv_writer.writerow([t1_size, t2_size, joined_size,
+                                                     str(t1_aut_size), str(t2_aut_size), str(joined_aut_size),
+                                                     t1_aut, t2_aut, joined_aut])
+
                         else:
-                            csv_writer.writerow([' ', ' ', str(g.number_of_automorphisms()) + '(' + str(g.number_of_nodes()) + ')'])
+                            # csv_writer.writerow([' ', ' ', str(g.number_of_automorphisms()) + '(' + str(g.number_of_nodes()) + ')'])
+                            if CREATE_IMAGES:
+                                csv_writer.writerow(['', '', '',
+                                                     '', '', str(joined_aut_size),
+                                                     '', '', joined_aut,
+                                                     '', '', joined_path])
+                            else:
+                                csv_writer.writerow(['', '', '',
+                                                     '', '', str(joined_aut_size),
+                                                     '', '', joined_aut])
+
                         image_file_count += 1
 
 
 if __name__ == '__main__':
     start = datetime.datetime.now()
     # UseCase.join_2_random_trees(100, 100)
-    UseCase.test_generating_sets()
+    UseCase.generate_graphs_iteratively_by_joining(5)
     print('Duration: ', datetime.datetime.now() - start)
     # result = UseCase.join_2_simple_graphs2()

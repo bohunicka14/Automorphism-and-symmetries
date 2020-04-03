@@ -16,6 +16,18 @@ def run_nauty():
 def nauty_dre_to_dot(path):
     os.popen('./nauty26r12/dretodot ./nauty26r12/mygraph.dre {}'.format(path))
 
+def nauty_get_automorphism_group_info():
+    '''
+    :return: Tuple (group size, group)
+    '''
+    run_nauty()
+    stream = os.popen('grep -o "grpsize=[0-9]*" ./nauty26r12/myoutput.txt | grep -o [0-9]*')
+    grp_size = int(stream.read())
+    stream = os.popen('grep -o "([0-9]* [0-9]*)" ./nauty26r12/myoutput.txt')
+    grp = str(stream.read())
+    stream.close()
+    return grp_size, grp
+
 def nauty_get_aut_group_size():
     run_nauty()
     stream = os.popen('grep -o "grpsize=[0-9]*" ./nauty26r12/myoutput.txt | grep -o [0-9]*')
