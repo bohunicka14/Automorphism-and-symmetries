@@ -1129,6 +1129,9 @@ class GraphGenerator:
                 node_g2_copy = node
 
         g1_copy.join_other_graph_by_node(g1_copy.nodes[-1], node_g2_copy, g2_copy, 1)
+        if g1_copy.need_to_reevaluate_node_values():
+            g1_copy.reevaluate_node_values()
+
         return g1_copy
 
     @staticmethod
