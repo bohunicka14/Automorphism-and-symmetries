@@ -1107,10 +1107,12 @@ class GraphGenerator:
         for node in g1_copy.nodes:
             if node.value == node_g1.value:
                 node_g1_copy = node
+                break
 
         for node in g2_copy.nodes:
             if node.value == node_g2.value:
                 node_g2_copy = node
+                break
 
         g1_copy.join_other_graph_by_node(node_g1_copy, node_g2_copy, g2_copy)
         if g1_copy.need_to_reevaluate_node_values():

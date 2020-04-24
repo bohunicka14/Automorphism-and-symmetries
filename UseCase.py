@@ -2,7 +2,7 @@ from graph_generator import *
 import os, shutil, csv, datetime
 import nautyRunner
 
-FOLDER = r'./results_joining_by_node_linux_up_to_8_nodes'
+FOLDER = r'./results_joining_by_node_linux_debug'
 FULL_CSV_PATH = FOLDER + '/results.csv'
 CREATE_IMAGES = True
 
@@ -172,10 +172,6 @@ class UseCase():
                                          str(all_graphs[i].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
                             os.mkdir(new_folder)
 
-                    if by_node:
-                        result = GraphGenerator.join_graphs_by_node_all_possibilities(all_graphs[i], all_graphs[j])
-                    else:
-                        result = GraphGenerator.join_graphs_by_edge_all_possibilities(all_graphs[i], all_graphs[j])
 
                     if CREATE_IMAGES:
                         if sys.platform == 'windows':
@@ -186,6 +182,11 @@ class UseCase():
                             nautyRunner.nauty_dre_to_dot(new_folder + '/first.dot')
                             all_graphs[j].serialize_to_nauty_format()
                             nautyRunner.nauty_dre_to_dot(new_folder + '/second.dot')
+
+                    if by_node:
+                        result = GraphGenerator.join_graphs_by_node_all_possibilities(all_graphs[i], all_graphs[j])
+                    else:
+                        result = GraphGenerator.join_graphs_by_edge_all_possibilities(all_graphs[i], all_graphs[j])
 
                     if CREATE_IMAGES:
                         csv_writer.writerow(['', '', '', '', '', '', '', '', '', '', '', ''])
@@ -202,6 +203,7 @@ class UseCase():
                             if sys.platform == 'windows':
                                 g.draw('Result from joining 2 graphs', True, new_folder + '/' + str(image_file_count) + '.jpg')
                             elif sys.platform == 'linux':
+                                pass
                                 g.serialize_to_nauty_format()
                                 nautyRunner.nauty_dre_to_dot(new_folder + '/' + str(image_file_count) + '.dot')
 
@@ -213,11 +215,6 @@ class UseCase():
                             joined_path = new_folder + '/' + str(image_file_count) + '.dot'
 
                         if image_file_count == 0:
-                            # csv_writer.writerow(
-                            #     [str(all_graphs[i].number_of_automorphisms()) + '(' + str(all_graphs[i].number_of_nodes()) + ')',
-                            #      str(all_graphs[j].number_of_automorphisms()) + '(' + str(all_graphs[j].number_of_nodes()) + ')',
-                            #      str(g.number_of_automorphisms()) + '(' + str(g.number_of_nodes()) + ')'])
-
                             t1_size = str(all_graphs[i].number_of_nodes())
                             t2_size = str(all_graphs[j].number_of_nodes())
                             joined_size = str(g.number_of_nodes())
@@ -260,13 +257,13 @@ class UseCase():
 if __name__ == '__main__':
     start = datetime.datetime.now()
     # UseCase.join_2_random_trees(100, 100)
-    # UseCase.generate_graphs_iteratively_by_joining(8)
-    star = GraphGenerator.generate_star(5)
-    star2 = GraphGenerator.generate_star(5)
-    joined = GraphGenerator.join_graphs_by_edge(star, star2, star.nodes[0], star2.nodes[0])
-    joined.serialize_to_nauty_format()
-    result_joined = nautyRunner.nauty_get_aut_group()
-    print("Aut group: \n", result_joined)
-    nautyRunner.nauty_dre_to_dot('star.dot')
+    UseCase.generate_graphs_iteratively_by_joining(5)
+    # star = GraphGenerator.generate_star(5)
+    # star2 = GraphGenerator.generate_star(5)
+    # joined = GraphGenerator.join_graphs_by_edge(star, star2, star.nodes[0], star2.nodes[0])
+    # joined.serialize_to_nauty_format()
+    # result_joined = nautyRunner.nauty_get_aut_group()
+    # print("Aut group: \n", result_joined)
+    # nautyRunner.nauty_dre_to_dot('star.dot')
     print('Duration: ', datetime.datetime.now() - start)
-    # result = UseCase.join_2_simple_graphs2()
+    # # result = UseCase.join_2_simple_graphs2()
