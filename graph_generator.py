@@ -7,7 +7,7 @@ import shutil
 import datetime
 from graph import *
 # import numpy
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 class GraphGenerator:
 
@@ -36,7 +36,7 @@ class GraphGenerator:
         g = Graph()
         for edge in tree.edges:
             g.insert_edge(0, edge[0], edge[1])
-        draw(tree)
+        # draw(tree)
         # plt.show()
         # plt.savefig('plt.png')
         # g.draw('', False)
