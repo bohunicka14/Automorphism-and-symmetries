@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 
 def run_nauty():
     nauty = subprocess.Popen(["./nauty26r12/dreadnaut"],
@@ -21,8 +22,17 @@ def nauty_get_automorphism_group_info():
     :return: Tuple (group size, group)
     '''
     run_nauty()
-    stream = os.popen('grep -o "grpsize=[0-9]*" ./nauty26r12/myoutput.txt | grep -o [0-9]*')
-    grp_size = int(stream.read())
+    runs = 0
+    while runs < 10:
+        try:
+            stream = os.popen('grep -o "grpsize=[0-9]*" ./nauty26r12/myoutput.txt | grep -o [0-9]*')
+            grp_size = int(stream.read())
+            break
+        except ValueError:
+            print(open('./nauty26r12/myoutput.txt', 'r').read())
+            time.sleep(1)
+        runs += 1
+
     stream = os.popen('grep -o "([0-9]* [0-9]*)" ./nauty26r12/myoutput.txt')
     grp = str(stream.read())
     stream.close()

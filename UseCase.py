@@ -2,7 +2,7 @@ from graph_generator import *
 import os, shutil, csv, datetime
 import nautyRunner
 
-FOLDER = r'./results_joining_by_node_linux_debug'
+FOLDER = r'./results_joining_by_node_linux'
 FULL_CSV_PATH = FOLDER + '/results.csv'
 CREATE_IMAGES = True
 
@@ -257,7 +257,7 @@ class UseCase():
 if __name__ == '__main__':
     start = datetime.datetime.now()
     # UseCase.join_2_random_trees(100, 100)
-    UseCase.generate_graphs_iteratively_by_joining(5)
+    UseCase.generate_graphs_iteratively_by_joining(6)
     # star = GraphGenerator.generate_star(5)
     # star2 = GraphGenerator.generate_star(5)
     # joined = GraphGenerator.join_graphs_by_edge(star, star2, star.nodes[0], star2.nodes[0])

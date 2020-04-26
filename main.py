@@ -80,16 +80,35 @@ def generate_graph(base):
 
     return result
 
+import operator as op
+from functools import reduce
+
+def ncr(n, r):
+    r = min(r, n-r)
+    numer = reduce(op.mul, range(n, n-r, -1), 1)
+    denom = reduce(op.mul, range(1, r+1), 1)
+    return numer / denom
 
 if __name__ == '__main__':
-    g = Graph()
-    g.add_edge(1, 4)
-    g.add_edge(2, 4)
-    g.add_edge(3, 4)
-    g.add_edge(5, 4)
-    g.add_edge(5, 6)
+    tree_size = 2
+    result = 0
+    _array = [1, 1, 2, 3, 6, 11, 23, 47, 106]
+    for i in range(len(_array)):
+        for j in range(i, len(_array)):
+            result += ncr(_array[i]+_array[j], 2) * (i+2) * (j+2)
 
-    print(g.prufer_code())
+    print(result)
+    print(sum(_array))
+    print(ncr(200,2))
+
+    # g = Graph()
+    # g.add_edge(1, 4)
+    # g.add_edge(2, 4)
+    # g.add_edge(3, 4)
+    # g.add_edge(5, 4)
+    # g.add_edge(5, 6)
+    #
+    # print(g.prufer_code())
 
     ## generating graph
     # test = Graph()
