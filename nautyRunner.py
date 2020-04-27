@@ -33,7 +33,7 @@ def nauty_get_automorphism_group_info():
             time.sleep(1)
         runs += 1
 
-    stream = os.popen('grep -o "([0-9]* [0-9]*)" ./nauty26r12/myoutput.txt')
+    stream = os.popen('grep "([0-9]* [0-9]*)" ./nauty26r12/myoutput.txt')
     grp = str(stream.read())
     stream.close()
     return grp_size, grp
@@ -47,7 +47,7 @@ def nauty_get_aut_group_size():
 
 def nauty_get_aut_group():
     run_nauty()
-    stream = os.popen('grep -o "([0-9]* [0-9]*)" ./nauty26r12/myoutput.txt')
+    stream = os.popen('grep "([0-9]* [0-9]*)" ./nauty26r12/myoutput.txt')
     return_value = str(stream.read())
     stream.close()
     return return_value

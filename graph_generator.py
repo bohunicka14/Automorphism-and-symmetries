@@ -6,6 +6,7 @@ import os
 import shutil
 import datetime
 from graph import *
+import nautyRunner
 # import numpy
 import matplotlib.pyplot as plt
 
@@ -187,8 +188,16 @@ class GraphGenerator:
         return result
 
 if __name__ == '__main__':
-    tree = GraphGenerator.generate_random_tree(7)
+    tree = GraphGenerator.generate_big_almost_asymmetric_tree(50)
+    print(tree.number_of_nodes())
+    start = datetime.datetime.now()
+    print('|Aut(tree)| = ', tree.number_of_automorphisms())
+    print('Duration: ', datetime.datetime.now() - start)
+    if tree.need_to_reevaluate_node_values():
+        tree.reevaluate_node_values()
     tree.serialize_to_nauty_format()
+    nautyRunner.run_nauty()
+
 
     # GraphGenerator.generate_random_tree(10)
     # g = GraphGenerator.generate_big_asymemtric_tree(20)
