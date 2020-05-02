@@ -1,6 +1,7 @@
 from graph_generator import *
 import os, shutil, csv, datetime
 import nautyRunner
+import time
 
 FOLDER = r'./results_joining_by_node_linux'
 FULL_CSV_PATH = FOLDER + '/results.csv'
@@ -100,19 +101,57 @@ class UseCase():
             print('|Aut(result)| = ', g.number_of_automorphisms())
 
     @staticmethod
-    def test_generating_sets():
-        tree1 = GraphGenerator.generate_path(5)
-        tree2 = GraphGenerator.generate_star(6)
-        tree1.serialize_to_nauty_format()
-        result1 = nautyRunner.nauty_get_aut_group()
-        tree2.serialize_to_nauty_format()
-        result2 = nautyRunner.nauty_get_aut_group()
-        print("Path aut group: \n", result1)
-        print("Star aut group: \n", result2)
-        joined = GraphGenerator.join_graphs_by_node(tree1, tree2, tree1.nodes[0], tree2.nodes[0])
-        joined.serialize_to_nauty_format()
-        result_joined = nautyRunner.nauty_get_aut_group()
-        print("Joined tree aut group: \n", result_joined)
+    def get_aut_group_from_permutation_group(permutation_group='', size_of_perm_group=1):
+        if permutation_group == '' and size_of_perm_group == 1:
+            return 'trivial'
+        permutation_group = permutation_group[:-1]
+        permutation_group_list = permutation_group.split(',')
+        one_symmetry = []
+        more_symmetries = [] # len(more_symmetries) = number of S_2 group
+        for item in permutation_group_list:
+            if item.count('(') == 1:
+                one_symmetry.append(item)
+            elif item.count('(') > 1:
+                more_symmetries.append(item)
+
+        assert len(permutation_group_list), len(more_symmetries)+len(one_symmetry)
+
+        if len(one_symmetry) == 1:
+            return 'S_2' + ' x S_2'*len(more_symmetries)
+        elif len(one_symmetry) == 0:
+            return ('S_2 x ' * len(more_symmetries))[:-3]
+
+        numbers_to_check_set = set()
+        numbers_already_checked_set = set()
+        one_symmetry_list_of_tuples = []
+        for item in one_symmetry:
+            one_symmetry_list_of_tuples.append(tuple(item[1:-1].split(' ')))
+
+        unique_numbers = set()
+        for item in one_symmetry_list_of_tuples:
+            unique_numbers.add(item[0])
+            unique_numbers.add(item[1])
+
+        result = ''
+        while len(numbers_already_checked_set) != len(unique_numbers):
+            for item in one_symmetry_list_of_tuples:
+                a, b = item
+                if a in numbers_already_checked_set or b in numbers_already_checked_set:
+                    continue
+                if len(numbers_to_check_set) == 0:
+                    numbers_to_check_set.add(a)
+                    numbers_to_check_set.add(b)
+                    continue
+                if a in numbers_to_check_set or b in numbers_to_check_set:
+                    numbers_to_check_set.add(a)
+                    numbers_to_check_set.add(b)
+
+            result += 'S_' + str(len(numbers_to_check_set)) + ' x '
+            numbers_already_checked_set = numbers_already_checked_set.union(numbers_to_check_set)
+            numbers_to_check_set = set()
+
+        return result[:-3] + ' x S_2'*len(more_symmetries)
+
 
     @staticmethod
     def generate_graphs_iteratively_by_joining(n, by_node=True):
@@ -172,7 +211,6 @@ class UseCase():
                                          str(all_graphs[i].number_of_nodes()) + '_iteration_' + str(max_iteration + 1)
                             os.mkdir(new_folder)
 
-
                     if CREATE_IMAGES:
                         if sys.platform == 'windows':
                             all_graphs[i].draw('First graph to be joined', True, new_folder + '/first.jpg')
@@ -180,6 +218,7 @@ class UseCase():
                         elif sys.platform == 'linux':
                             all_graphs[i].serialize_to_nauty_format()
                             nautyRunner.nauty_dre_to_dot(new_folder + '/first.dot')
+                            time.sleep(0.3)
                             all_graphs[j].serialize_to_nauty_format()
                             nautyRunner.nauty_dre_to_dot(new_folder + '/second.dot')
 
@@ -210,6 +249,8 @@ class UseCase():
                         g.serialize_to_nauty_format()
                         joined_aut_size, joined_aut = nautyRunner.nauty_get_automorphism_group_info()
                         joined_aut = ','.join(joined_aut.split('\n'))
+                        joined_aut = joined_aut[:-1] + ' = ' + UseCase.get_aut_group_from_permutation_group(joined_aut,
+                                                                                                            int(joined_aut_size))
 
                         if CREATE_IMAGES:
                             joined_path = new_folder + '/' + str(image_file_count) + '.dot'
@@ -222,9 +263,13 @@ class UseCase():
                             all_graphs[i].serialize_to_nauty_format()
                             t1_aut_size, t1_aut = nautyRunner.nauty_get_automorphism_group_info()
                             t1_aut = ','.join(t1_aut.split('\n'))
+                            t1_aut = t1_aut[:-1] + ' = ' + UseCase.get_aut_group_from_permutation_group(t1_aut,
+                                                                                                        int(t1_aut_size))
                             all_graphs[j].serialize_to_nauty_format()
                             t2_aut_size, t2_aut = nautyRunner.nauty_get_automorphism_group_info()
                             t2_aut = ','.join(t2_aut.split('\n'))
+                            t2_aut = t2_aut[:-1] + ' = ' + UseCase.get_aut_group_from_permutation_group(t2_aut,
+                                                                                                        int(t2_aut_size))
 
                             if CREATE_IMAGES:
                                 t1_path = new_folder + '/first.dot'

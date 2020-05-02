@@ -92,14 +92,18 @@ def ncr(n, r):
 if __name__ == '__main__':
     tree_size = 2
     result = 0
-    _array = [1, 1, 2, 3, 6, 11, 23, 47, 106]
+    _array = [1, 1, 2, 3, 6, 11, 23, 47, 106, 235, 551, 1301, 3159, 7741, 19320, 48629,
+              123867, 317955, 823065, 2144505, 5623756, 14828074, 39299897, 104636890,
+              279793450, 751065460, 2023443032, 5469566585, 14830871802]
     for i in range(len(_array)):
         for j in range(i, len(_array)):
             result += ncr(_array[i]+_array[j], 2) * (i+2) * (j+2)
 
-    print(result)
-    print(sum(_array))
-    print(ncr(200,2))
+
+    print('Maximum size of tree: ', len(_array)+1)
+    print('Result: ', result)
+    print('Number of non isomorphic trees together: ', sum(_array))
+    print('Number of couples to process: ', ncr(sum(_array), 2))
 
     # g = Graph()
     # g.add_edge(1, 4)
