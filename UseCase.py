@@ -3,11 +3,12 @@ import os, shutil, csv, datetime
 import nautyRunner
 import time
 
-FOLDER = r'./results_joining_by_node_linux'
+FOLDER = r'./results_non_iterative_joining_by_edge_linux'
 FULL_CSV_PATH = FOLDER + '/results.csv'
 CREATE_IMAGES = True
 
-class UseCase():
+
+class UseCase:
 
     @staticmethod
     def join_2_simple_graphs1():
@@ -104,7 +105,6 @@ class UseCase():
     def get_aut_group_from_permutation_group(permutation_group='', size_of_perm_group=1):
         if permutation_group == '' and size_of_perm_group == 1:
             return 'trivial'
-        permutation_group = permutation_group[:-1]
         permutation_group_list = permutation_group.split(',')
         one_symmetry = []
         more_symmetries = [] # len(more_symmetries) = number of S_2 group
@@ -152,9 +152,23 @@ class UseCase():
 
         return result[:-3] + ' x S_2'*len(more_symmetries)
 
+    @staticmethod
+    def generate_list_of_random_different_trees():
+        trees = list()
+        trees.append(GraphGenerator.generate_big_almost_asymmetric_tree(10))
+        trees.append(GraphGenerator.generate_big_asymemtric_tree(10))
+        for i in [10, 20, 30, 40, 50, 100]:
+            trees.append(GraphGenerator.generate_random_tree(i))
+            trees.append(GraphGenerator.generate_random_binary_tree(i))
+        trees.append(GraphGenerator.generate_star(30))
+        trees.append(GraphGenerator.generate_path(30))
+        return trees
 
     @staticmethod
-    def generate_graphs_iteratively_by_joining(n, by_node=True):
+    def generate_graphs_iteratively_by_joining(input, by_node=True):
+        if type(input) != int and type(input) != list:
+            raise ValueError('Number of nodes or list of trees to process has to be defined!')
+            return
 
         def folder_exists(name):
             for item in os.listdir(FOLDER):
@@ -173,6 +187,11 @@ class UseCase():
                         max_value = int(item.split('_')[3])
             return max_value
 
+        def get_aut_group_from_string(string):
+            string = string.strip().split('\n')
+            string = map(lambda x: x.strip(), string)
+            return ','.join(string)
+
         if not os.path.exists(FOLDER):
             os.mkdir(FOLDER)
         for item in os.listdir(FOLDER):
@@ -181,18 +200,21 @@ class UseCase():
             else:
                 os.remove(FOLDER + '/' + item)
 
-        if n < 2:
-            return
-
-        out = GraphGenerator.generate_path(2)
-        all_graphs = [out]
-        # generate all non isomorphic graphs with maximum n vertices
-        for i in range(n-2):
-            if not isinstance(out, list):
-                out = GraphGenerator.generate_non_isomorphic_graphs([out])
-            else:
-                out = GraphGenerator.generate_non_isomorphic_graphs(out)
-            all_graphs.extend(out)
+        if type(input) == int:
+            if input < 2:
+                return
+            # generating non-isomorphic trees
+            out = GraphGenerator.generate_path(2)
+            all_graphs = [out]
+            # generate all non isomorphic graphs with maximum "input" vertices
+            for i in range(input-2):
+                if not isinstance(out, list):
+                    out = GraphGenerator.generate_non_isomorphic_graphs([out])
+                else:
+                    out = GraphGenerator.generate_non_isomorphic_graphs(out)
+                all_graphs.extend(out)
+        elif type(input) == list:
+            all_graphs = input
 
         with open(FULL_CSV_PATH, 'w', newline='') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=';')
@@ -222,10 +244,18 @@ class UseCase():
                             all_graphs[j].serialize_to_nauty_format()
                             nautyRunner.nauty_dre_to_dot(new_folder + '/second.dot')
 
-                    if by_node:
-                        result = GraphGenerator.join_graphs_by_node_all_possibilities(all_graphs[i], all_graphs[j])
-                    else:
-                        result = GraphGenerator.join_graphs_by_edge_all_possibilities(all_graphs[i], all_graphs[j])
+                    if type(input) == list:
+                        result = list()
+                        if by_node:
+                            tree = GraphGenerator.join_graphs_by_node_randomly(all_graphs[i], all_graphs[j])
+                        else:
+                            tree = GraphGenerator.join_graphs_by_edge_randomly(all_graphs[i], all_graphs[j])
+                        result.append(tree)
+                    elif type(input) == int:
+                        if by_node:
+                            result = GraphGenerator.join_graphs_by_node_all_possibilities(all_graphs[i], all_graphs[j])
+                        else:
+                            result = GraphGenerator.join_graphs_by_edge_all_possibilities(all_graphs[i], all_graphs[j])
 
                     if CREATE_IMAGES:
                         csv_writer.writerow(['', '', '', '', '', '', '', '', '', '', '', ''])
@@ -248,8 +278,8 @@ class UseCase():
 
                         g.serialize_to_nauty_format()
                         joined_aut_size, joined_aut = nautyRunner.nauty_get_automorphism_group_info()
-                        joined_aut = ','.join(joined_aut.split('\n'))
-                        joined_aut = joined_aut[:-1] + ' = ' + UseCase.get_aut_group_from_permutation_group(joined_aut,
+                        joined_aut = get_aut_group_from_string(joined_aut)
+                        joined_aut = joined_aut + ' = ' + UseCase.get_aut_group_from_permutation_group(joined_aut,
                                                                                                             int(joined_aut_size))
 
                         if CREATE_IMAGES:
@@ -262,13 +292,13 @@ class UseCase():
 
                             all_graphs[i].serialize_to_nauty_format()
                             t1_aut_size, t1_aut = nautyRunner.nauty_get_automorphism_group_info()
-                            t1_aut = ','.join(t1_aut.split('\n'))
-                            t1_aut = t1_aut[:-1] + ' = ' + UseCase.get_aut_group_from_permutation_group(t1_aut,
+                            t1_aut = get_aut_group_from_string(t1_aut)
+                            t1_aut = t1_aut + ' = ' + UseCase.get_aut_group_from_permutation_group(t1_aut,
                                                                                                         int(t1_aut_size))
                             all_graphs[j].serialize_to_nauty_format()
                             t2_aut_size, t2_aut = nautyRunner.nauty_get_automorphism_group_info()
-                            t2_aut = ','.join(t2_aut.split('\n'))
-                            t2_aut = t2_aut[:-1] + ' = ' + UseCase.get_aut_group_from_permutation_group(t2_aut,
+                            t2_aut = get_aut_group_from_string(t2_aut)
+                            t2_aut = t2_aut + ' = ' + UseCase.get_aut_group_from_permutation_group(t2_aut,
                                                                                                         int(t2_aut_size))
 
                             if CREATE_IMAGES:
@@ -302,7 +332,8 @@ class UseCase():
 if __name__ == '__main__':
     start = datetime.datetime.now()
     # UseCase.join_2_random_trees(100, 100)
-    UseCase.generate_graphs_iteratively_by_joining(6)
+    trees = UseCase.generate_list_of_random_different_trees()
+    UseCase.generate_graphs_iteratively_by_joining(trees, False)
     # star = GraphGenerator.generate_star(5)
     # star2 = GraphGenerator.generate_star(5)
     # joined = GraphGenerator.join_graphs_by_edge(star, star2, star.nodes[0], star2.nodes[0])

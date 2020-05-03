@@ -105,10 +105,6 @@ class GraphGenerator:
         return output
 
     @staticmethod
-    def generate_graph_permutations(self, graph):
-        pass
-
-    @staticmethod
     def check_isomorphism(graph, graphs=[]):
         for g in graphs:
             if graph.is_isomorphic(g):
@@ -150,6 +146,18 @@ class GraphGenerator:
             g1_copy.reevaluate_node_values()
 
         return g1_copy
+
+    @staticmethod
+    def join_graphs_by_node_randomly(g1, g2):
+        random_node_g1 = random.choice(g1.nodes)
+        random_node_g2 = random.choice(g2.nodes)
+        return GraphGenerator.join_graphs_by_node(g1, g2, random_node_g1, random_node_g2)
+
+    @staticmethod
+    def join_graphs_by_edge_randomly(g1, g2):
+        random_node_g1 = random.choice(g1.nodes)
+        random_node_g2 = random.choice(g2.nodes)
+        return GraphGenerator.join_graphs_by_edge(g1, g2, random_node_g1, random_node_g2)
 
     @staticmethod
     def join_graphs_by_node_all_possibilities(g1, g2):
