@@ -5,6 +5,32 @@ import UseCase
 from UseCase import *
 import nautyRunner
 from graph_generator import *
+import csv
+
+RESULTS_FOLDER1 = 'results_joining_by_edge_linux'
+RESULTS_FOLDER2 = 'results_joining_by_node_linux'
+RESULTS_FOLDER3 = 'results_non_iterative_joining_by_edge_linux'
+RESULTS_FOLDER4 = 'results_non_iterative_joining_by_node_linux'
+RESULTS_FILE = 'results.csv'
+
+class TestAutomorphismGroupsInResultFile(unittest.TestCase):
+
+    def test(self):
+        for folder in [RESULTS_FOLDER1, RESULTS_FOLDER2, RESULTS_FOLDER3, RESULTS_FOLDER4]:
+            with open(folder + '/' + RESULTS_FILE, newline='') as csvfile:
+                table = csv.reader(csvfile, delimiter=';')
+                for row in table:
+                    print(row)
+                    if not 'wreath product' in row[8] and 'trivial' not in row[8] and row[8] != '' and row[8] != 'Aut(Joined)':
+                        aut_group_size = row[5]
+                        direct_product = row[8] # (5 6),(3 4),(2 3) = S_2 x S_3
+                        direct_product = direct_product.split('=')[1]
+                        direct_product = direct_product.strip()
+                        result = 1
+                        for item in direct_product.split('x'):
+                            item = item.strip()
+                            result *= math.factorial(int(item.split('_')[1]))
+                        self.assertEqual(result, int(aut_group_size))
 
 class TestInsertingEdges(unittest.TestCase):
 

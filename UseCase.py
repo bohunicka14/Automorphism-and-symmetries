@@ -3,7 +3,7 @@ import os, shutil, csv, datetime
 import nautyRunner
 import time
 
-FOLDER = r'./results_non_iterative_joining_by_edge_linux'
+FOLDER = r'./results_non_iterative_joining_by_node_linux'
 FULL_CSV_PATH = FOLDER + '/results.csv'
 CREATE_IMAGES = True
 
@@ -107,19 +107,18 @@ class UseCase:
             return 'trivial'
         permutation_group_list = permutation_group.split(',')
         one_symmetry = []
-        more_symmetries = [] # len(more_symmetries) = number of S_2 group
+        wreath_product = False
         for item in permutation_group_list:
             if item.count('(') == 1:
                 one_symmetry.append(item)
             elif item.count('(') > 1:
-                more_symmetries.append(item)
+                wreath_product = True
 
-        assert len(permutation_group_list), len(more_symmetries)+len(one_symmetry)
+        if wreath_product:
+            return 'wreath product'
 
         if len(one_symmetry) == 1:
-            return 'S_2' + ' x S_2'*len(more_symmetries)
-        elif len(one_symmetry) == 0:
-            return ('S_2 x ' * len(more_symmetries))[:-3]
+            return 'S_2'
 
         numbers_to_check_set = set()
         numbers_already_checked_set = set()
@@ -150,7 +149,7 @@ class UseCase:
             numbers_already_checked_set = numbers_already_checked_set.union(numbers_to_check_set)
             numbers_to_check_set = set()
 
-        return result[:-3] + ' x S_2'*len(more_symmetries)
+        return result[:-3]
 
     @staticmethod
     def generate_list_of_random_different_trees():
@@ -333,7 +332,7 @@ if __name__ == '__main__':
     start = datetime.datetime.now()
     # UseCase.join_2_random_trees(100, 100)
     trees = UseCase.generate_list_of_random_different_trees()
-    UseCase.generate_graphs_iteratively_by_joining(trees, False)
+    UseCase.generate_graphs_iteratively_by_joining(trees)
     # star = GraphGenerator.generate_star(5)
     # star2 = GraphGenerator.generate_star(5)
     # joined = GraphGenerator.join_graphs_by_edge(star, star2, star.nodes[0], star2.nodes[0])
