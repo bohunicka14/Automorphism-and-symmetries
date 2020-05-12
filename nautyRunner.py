@@ -25,8 +25,12 @@ def nauty_get_automorphism_group_info():
     runs = 0
     while runs < 10:
         try:
-            stream = os.popen('grep -o "grpsize=[0-9]*" ./nauty26r12/myoutput.txt | grep -o [0-9]*')
-            grp_size = int(stream.read())
+            stream = os.popen('grep -o "grpsize=[0-9,\.]*" ./nauty26r12/myoutput.txt | grep -o [0-9,\.]*')
+            result = stream.read()
+            if '.' in str(result):
+                grp_size = 0
+            else:
+                grp_size = int(result)
             break
         except ValueError:
             print(open('./nauty26r12/myoutput.txt', 'r').read())
@@ -40,8 +44,13 @@ def nauty_get_automorphism_group_info():
 
 def nauty_get_aut_group_size():
     run_nauty()
-    stream = os.popen('grep -o "grpsize=[0-9]*" ./nauty26r12/myoutput.txt | grep -o [0-9]*')
-    return_value = int(stream.read())
+    stream = os.popen('grep -o "grpsize=[0-9,\.]*" ./nauty26r12/myoutput.txt | grep -o [0-9,\.]*')
+    result = stream.read()
+    if '.' in str(result):
+        return_value = 0
+    else:
+        return_value = int(result)
+
     stream.close()
     return return_value
 

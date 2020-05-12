@@ -3,7 +3,7 @@ import os, shutil, csv, datetime
 import nautyRunner
 import time
 
-FOLDER = r'./results_non_iterative_joining_by_node_linux'
+FOLDER = r'./results_non_iterative_joining_by_edge_linux'
 FULL_CSV_PATH = FOLDER + '/results.csv'
 CREATE_IMAGES = True
 
@@ -277,6 +277,8 @@ class UseCase:
 
                         g.serialize_to_nauty_format()
                         joined_aut_size, joined_aut = nautyRunner.nauty_get_automorphism_group_info()
+                        if joined_aut_size == 0:
+                            joined_aut_size = g.number_of_automorphisms()
                         joined_aut = get_aut_group_from_string(joined_aut)
                         joined_aut = joined_aut + ' = ' + UseCase.get_aut_group_from_permutation_group(joined_aut,
                                                                                                             int(joined_aut_size))
@@ -291,11 +293,15 @@ class UseCase:
 
                             all_graphs[i].serialize_to_nauty_format()
                             t1_aut_size, t1_aut = nautyRunner.nauty_get_automorphism_group_info()
+                            if t1_aut_size == 0:
+                                t1_aut_size = all_graphs[i].number_of_automorphisms()
                             t1_aut = get_aut_group_from_string(t1_aut)
                             t1_aut = t1_aut + ' = ' + UseCase.get_aut_group_from_permutation_group(t1_aut,
                                                                                                         int(t1_aut_size))
                             all_graphs[j].serialize_to_nauty_format()
                             t2_aut_size, t2_aut = nautyRunner.nauty_get_automorphism_group_info()
+                            if t2_aut_size == 0:
+                                t2_aut_size = all_graphs[j].number_of_automorphisms()
                             t2_aut = get_aut_group_from_string(t2_aut)
                             t2_aut = t2_aut + ' = ' + UseCase.get_aut_group_from_permutation_group(t2_aut,
                                                                                                         int(t2_aut_size))
@@ -330,10 +336,10 @@ class UseCase:
 
 if __name__ == '__main__':
     start = datetime.datetime.now()
-    # UseCase.join_2_random_trees(100, 100)
+
     trees = UseCase.generate_list_of_random_different_trees()
-    UseCase.generate_graphs_iteratively_by_joining(trees)
-    # star = GraphGenerator.generate_star(5)
+    UseCase.generate_graphs_iteratively_by_joining(trees, False)
+
     # star2 = GraphGenerator.generate_star(5)
     # joined = GraphGenerator.join_graphs_by_edge(star, star2, star.nodes[0], star2.nodes[0])
     # joined.serialize_to_nauty_format()

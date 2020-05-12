@@ -17,20 +17,21 @@ class TestAutomorphismGroupsInResultFile(unittest.TestCase):
 
     def test(self):
         for folder in [RESULTS_FOLDER1, RESULTS_FOLDER2, RESULTS_FOLDER3, RESULTS_FOLDER4]:
+            print(folder)
             with open(folder + '/' + RESULTS_FILE, newline='') as csvfile:
                 table = csv.reader(csvfile, delimiter=';')
                 for row in table:
-                    print(row)
                     if not 'wreath product' in row[8] and 'trivial' not in row[8] and row[8] != '' and row[8] != 'Aut(Joined)':
                         aut_group_size = row[5]
                         direct_product = row[8] # (5 6),(3 4),(2 3) = S_2 x S_3
                         direct_product = direct_product.split('=')[1]
                         direct_product = direct_product.strip()
+                        print(direct_product, row[11])
                         result = 1
                         for item in direct_product.split('x'):
                             item = item.strip()
                             result *= math.factorial(int(item.split('_')[1]))
-                        self.assertEqual(result, int(aut_group_size))
+                        self.assertEqual(int(aut_group_size), result)
 
 class TestInsertingEdges(unittest.TestCase):
 
@@ -174,36 +175,36 @@ class TestNumberOfAutomorphisms(unittest.TestCase):
     def test_big_asymmetric_tree(self):
         tree = GraphGenerator.generate_big_asymemtric_tree(30)
         tree.serialize_to_nauty_format()
-        self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_aut_group_size())
+        self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_automorphism_group_info()[0])
 
     def test_big_almost_asymmetric_tree(self):
         tree = GraphGenerator.generate_big_almost_asymmetric_tree(30)
         tree.serialize_to_nauty_format()
-        self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_aut_group_size())
+        self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_automorphism_group_info()[0])
 
     def test_small_random_binary_trees(self):
         for i in range(10):
             tree = GraphGenerator.generate_random_binary_tree(random.randint(4, 21))
             tree.serialize_to_nauty_format()
-            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_aut_group_size())
+            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_automorphism_group_info()[0])
 
     def test_small_random_trees(self):
         for i in range(10):
             tree = GraphGenerator.generate_random_tree(random.randint(4, 21))
             tree.serialize_to_nauty_format()
-            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_aut_group_size())
+            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_automorphism_group_info()[0])
 
     def test_big_random_binary_trees(self):
         for i in range(10):
             tree = GraphGenerator.generate_random_binary_tree(random.randint(40, 81))
             tree.serialize_to_nauty_format()
-            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_aut_group_size())
+            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_automorphism_group_info()[0])
 
     def test_big_random_trees(self):
         for i in range(10):
             tree = GraphGenerator.generate_random_tree(random.randint(40, 81))
             tree.serialize_to_nauty_format()
-            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_aut_group_size())
+            self.assertEqual(tree.number_of_automorphisms(), nautyRunner.nauty_get_automorphism_group_info()[0])
 
 if __name__ == '__main__':
     unittest.main()
