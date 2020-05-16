@@ -200,54 +200,6 @@ class Graph(object):
 
         return _dict
 
-
-    # def degree__number_of_leaves_as_grandchild_sequence(self):
-    #     def number_of_leaves_as_childs(node):
-    #         number = 0
-    #         for edge in node.edges:
-    #             child = edge.node_to if node != edge.node_to else edge.node_from
-    #             if child.is_leaf():
-    #                 number += 1
-    #         return number
-    #
-    #     def number_of_leaves_as_grandchilds(node):
-    #         number = 0
-    #         children = []
-    #         for edge in node.edges:
-    #             child = edge.node_to if node != edge.node_to else edge.node_from
-    #             children.append(child)
-    #
-    #         for child in children:
-    #             number += number_of_leaves_as_childs(child)
-    #         return number
-    #
-    #     _dict = dict()
-    #     for node in self.nodes:
-    #         if node.degree() not in _dict:
-    #             _dict[node.degree()] = Counter(str(number_of_leaves_as_grandchilds(node)))
-    #         else:
-    #             _dict[node.degree()].update(str(number_of_leaves_as_grandchilds(node)))
-    #
-    #     return _dict
-
-    # def degree__number_of_leaves_as_child_sequence(self):
-    #     def number_of_leaves_as_childs(node):
-    #         number = 0
-    #         for edge in node.edges:
-    #             child = edge.node_to if node != edge.node_to else edge.node_from
-    #             if child.is_leaf():
-    #                 number += 1
-    #         return number
-    #
-    #     _dict = dict()
-    #     for node in self.nodes:
-    #         if node.degree() not in _dict:
-    #             _dict[node.degree()] = Counter(str(number_of_leaves_as_childs(node)))
-    #         else:
-    #             _dict[node.degree()].update(str(number_of_leaves_as_childs(node)))
-    #
-    #     return _dict
-
     def check_k_regularity(self, k):
         for node in self.nodes:
             if node.degree() != k:
@@ -509,55 +461,26 @@ class Graph(object):
         return degree1 == len(self.nodes)-1 and middle_degree == len(self.nodes)-1
 
     def is_bipartite(self, src):
-        # Create a color array to store colors
-        # assigned to all veritces. Vertex
-        # number is used as index in this array.
-        # The value '-1' of  colorArr[i] is used to
-        # indicate that no color is assigned to
-        # vertex 'i'. The value 1 is used to indicate
-        # first color is assigned and value 0
-        # indicates second color is assigned.
         colorArr = [-1] * len(self.nodes)
-
-        # Assign first color to source
         colorArr[src] = 1
-
-        # Create a queue (FIFO) of vertex numbers and
-        # enqueue source vertex for BFS traversal
         queue = []
         queue.append(src)
 
         adjacency_matrix = self.get_adjacency_matrix()
 
-        # Run while there are vertices in queue
-        # (Similar to BFS)
         while queue:
-
             u = queue.pop()
-
-            # Return false if there is a self-loop
             if adjacency_matrix[u][u] == 1:
                 return False
 
             for v in range(len(self.nodes)):
-
-                # An edge from u to v exists and destination
-                # v is not colored
                 if adjacency_matrix[u][v] == 1 and colorArr[v] == -1:
-
-                    # Assign alternate color to this
-                    # adjacent v of u
                     colorArr[v] = 1 - colorArr[u]
                     queue.append(v)
 
-                    # An edge from u to v exists and destination
-                # v is colored with same color as u
                 elif adjacency_matrix[u][v] == 1 and colorArr[v] == colorArr[u]:
                     return False
 
-        # If we reach here, then all adjacent
-        # vertices can be colored with alternate
-        # color
         return True
 
     def is_isomorphic(self, g):
@@ -573,10 +496,6 @@ class Graph(object):
             return False
         if self.parent_sequence() != g.parent_sequence():
             return False
-        # if not self.is_degree__number_of_leaves_as_child_sequence_equal(g):
-        #     return False
-        # if not self.is_degree__number_of_leaves_as_grandchild_sequence_equal(g):
-        #     return False
         if not self.is_degree__number_of_leaves_as_nth_child_sequence_equal(g, 1):
             return False
         if not self.is_degree__number_of_leaves_as_nth_child_sequence_equal(g, 2):
@@ -604,61 +523,6 @@ class Graph(object):
             except KeyError:
                 return False
         return True
-
-    # def is_degree__number_of_leaves_as_grandchild_sequence_equal(self, g):
-    #     this = self.degree__number_of_leaves_as_grandchild_sequence()
-    #     other = g.degree__number_of_leaves_as_grandchild_sequence()
-    #
-    #     if len(this) != len(other):
-    #         return False
-    #     for key, value in this.items():
-    #         try:
-    #             if other[key] != this[key]:
-    #                 return False
-    #         except KeyError:
-    #             return False
-    #     return True
-
-    # def is_degree__number_of_leaves_as_child_sequence_equal(self, g):
-    #     this = self.degree__number_of_leaves_as_child_sequence()
-    #     other = g.degree__number_of_leaves_as_child_sequence()
-    #
-    #     if len(this) != len(other):
-    #         return False
-    #     for key, value in this.items():
-    #         try:
-    #             if other[key] != this[key]:
-    #                 return False
-    #         except KeyError:
-    #             return False
-    #     return True
-        # ========================================================================
-        # this = self.degree__number_of_leaves_as_child_sequence()
-        # other = g.degree__number_of_leaves_as_child_sequence()
-        #
-        # if len(this) != len(other):
-        #     if self.number_of_nodes() == 8 and g.number_of_nodes() == 8:
-        #         self.draw('1: False = ' + str(this), True, r'./debug/' + str(len(os.listdir(r'./debug'))+1) + '.jpg')
-        #         g.draw('2: False = ' + str(other), True, r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
-        #     return False
-        # for key, value in this.items():
-        #     try:
-        #         if other[key] != this[key]:
-        #             if self.number_of_nodes() == 8 and g.number_of_nodes() == 8:
-        #                 self.draw('1: False = ' + str(this), True,
-        #                           r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
-        #                 g.draw('2: False = ' + str(other), True, r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
-        #             return False
-        #     except KeyError:
-        #         if self.number_of_nodes() == 8 and g.number_of_nodes() == 8:
-        #             self.draw('1: False = ' + str(this), True, r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
-        #             g.draw('2: False = ' + str(other), True, r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
-        #         return False
-        #
-        # if self.number_of_nodes() == 8 and g.number_of_nodes() == 8:
-        #     self.draw('1: True = ' + str(this), True, r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
-        #     g.draw('2: True = ' + str(other), True, r'./debug/' + str(len(os.listdir(r'./debug')) + 1) + '.jpg')
-        # return True
 
     def __repr__(self):
         result = ''
@@ -775,8 +639,6 @@ class Graph(object):
             draw.text([150, window_height - 80], text=additional_info, font=font, fill=black)
         else:
             canvas.create_text(60, window_height - 50, text='Aut(G) = '+str(self.number_of_automorphisms()), font='helvetica 12 bold')
-            # canvas.create_text(60, window_height - 80, text='Degree sequence = ' + ','.join(map(str, self.degree_sequence())),
-            #                    font='helvetica 12 bold')
             canvas.create_text(150, window_height - 80, text=additional_info, font='helvetica 12 bold')
 
         if save_only and sys.platform == 'windows':
@@ -862,7 +724,6 @@ class Graph(object):
                         return False
                 return True
 
-            # print('result: ', result)
             help_index = 0
             for index1 in range(len(result)):
                 if index1 != 0 and len(help_list[help_index]) > 0:
@@ -881,19 +742,11 @@ class Graph(object):
 
             for item in help_list:
                 permutations *= math.factorial(len(item))
-            # print('help list: ', help_list)
-            # print('number of permutations: ', permutations)
+
             if permutations == 2:
                 return True
 
         return False
-        ## old version (wrong)
-        # _sequence = self.degree_sequence()
-        # _set = set(_sequence)
-        # for item in _set:
-        #     if _sequence.count(item) % 2 != 0:
-        #         return False
-        # return True
 
     def number_of_automorphisms(self):
         if self.is_star():
@@ -903,8 +756,6 @@ class Graph(object):
         result = 1
         for node in self.nodes:
             if node.degree() > 1:
-                # print('node value: ', node.value)
-                #result *= math.factorial(self.number_of_leaves_from_given_node(node))
                 result *= self.number_of_symmetry_permutations_of_subtree_from_given_node(node)
 
         if self.is_symmetric_by_edge():
@@ -961,7 +812,7 @@ class Graph(object):
                 if table1[key] != table2[key]:
                     return False
             return True
-        # print('result: ', result)
+
         help_index = 0
         for index1 in range(len(result)):
             if index1 != 0 and len(help_list[help_index]) > 0:
@@ -980,6 +831,5 @@ class Graph(object):
 
         for item in help_list:
             permutations *= math.factorial(len(item))
-        # print('help list: ', help_list)
-        # print('number of permutations: ', permutations)
+
         return permutations

@@ -7,8 +7,7 @@ import shutil
 import datetime
 from graph import *
 import nautyRunner
-# import numpy
-import matplotlib.pyplot as plt
+
 
 class GraphGenerator:
 
@@ -82,13 +81,9 @@ class GraphGenerator:
     @staticmethod
     def generate_big_almost_asymmetric_tree(n):
         g1 = GraphGenerator.generate_big_asymemtric_tree(n)
-        # print('|Aut(g)| = ', g1.number_of_automorphisms())
         g1.insert_edge(0, 0, g1.number_of_nodes())
         g1.insert_edge(0, 1, g1.number_of_nodes())
         g1.insert_edge(0, g1.number_of_nodes() - 1, g1.number_of_nodes())
-        # print('adding new edges')
-        # print('|Aut(g)| = ', g1.number_of_automorphisms())
-        # g1.draw('', False)
 
         return g1
 
@@ -196,109 +191,41 @@ class GraphGenerator:
         return result
 
 if __name__ == '__main__':
-    # tree = GraphGenerator.generate_big_almost_asymmetric_tree(50)
-    # print(tree.number_of_nodes())
+    pass
     # start = datetime.datetime.now()
-    # print('|Aut(tree)| = ', tree.number_of_automorphisms())
-    # print('Duration: ', datetime.datetime.now() - start)
-    # if tree.need_to_reevaluate_node_values():
-    #     tree.reevaluate_node_values()
-    # tree.serialize_to_nauty_format()
-    # nautyRunner.run_nauty()
-
-
-    # GraphGenerator.generate_random_tree(10)
-    # g = GraphGenerator.generate_big_asymemtric_tree(20)
-    # g = Graph()
-    # g.insert_edge(0, 1, 2)
-    # g.insert_edge(0, 2, 3)
-    # g.insert_edge(0, 2, 4)
-    # g.insert_edge(0, 4, 5)
-    # g.insert_edge(0, 4, 6)
-    # print(g.number_of_automorphisms())
-    # print(g.get_wolfram_input())
-
-    # g = GraphGenerator.generate_random_binary_tree(20)
-    # g.draw("", True, 'binary_tree.jpg', 2000, 600)
-
-    # g.draw("", True, 'big_tree.jpg', 20000, 20000)
-    # =================================================
-    # g = Graph()
-    # g.insert_edge(0, 0, 3)
-    # g.insert_edge(0, 1, 3)
-    # g.insert_edge(0, 2, 3)
-    # g.insert_edge(0, 3, 4)
-    # g.insert_edge(0, 4, 5)
-    #
-    # print(g.parent_sequence())
-    # g.draw('', False, '')
-
-    # =================================================
-    # for item in os.listdir(r'./debug'):
-    #     if os.path.isdir(r'./debug' + '/' + item):
-    #         shutil.rmtree(r'./debug' + '/' + item)
-    #     else:
-    #         os.remove(r'./debug' + '/' + item)
-    #
     # path = GraphGenerator.generate_path(4)
     # star = GraphGenerator.generate_star(4)
     # out = GraphGenerator.generate_non_isomorphic_graphs([path, star])
     # # 5 nodes
+    # # self.assertEqual(3, len(out))
     # out = GraphGenerator.generate_non_isomorphic_graphs(out)
     # # 6 nodes
+    # # self.assertEqual(6, len(out))
     # out = GraphGenerator.generate_non_isomorphic_graphs(out)
     # # 7 nodes
+    # # self.assertEqual(11, len(out))
     # out = GraphGenerator.generate_non_isomorphic_graphs(out)
     # # 8 nodes
-    # # out = GraphGenerator.generate_isomorphic_graphs(out)
+    # # self.assertEqual(23, len(out))
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
     # # 9 nodes
-
-    # =================================================
-    start = datetime.datetime.now()
-
-    path = GraphGenerator.generate_path(4)
-    star = GraphGenerator.generate_star(4)
-    out = GraphGenerator.generate_non_isomorphic_graphs([path, star])
-    # 5 nodes
-    # self.assertEqual(3, len(out))
-    out = GraphGenerator.generate_non_isomorphic_graphs(out)
-    # 6 nodes
-    # self.assertEqual(6, len(out))
-    out = GraphGenerator.generate_non_isomorphic_graphs(out)
-    # 7 nodes
-    # self.assertEqual(11, len(out))
-    out = GraphGenerator.generate_non_isomorphic_graphs(out)
-    # 8 nodes
-    # self.assertEqual(23, len(out))
-    out = GraphGenerator.generate_non_isomorphic_graphs(out)
-    # 9 nodes
-    # self.assertEqual(47, len(out))
-    out = GraphGenerator.generate_non_isomorphic_graphs(out)
-    # 10 nodes
-    # self.assertEqual(106, len(out))
-    out = GraphGenerator.generate_non_isomorphic_graphs(out)
-    # 11 nodes
-    # self.assertEqual(235, len(out))
-    out = GraphGenerator.generate_non_isomorphic_graphs(out)
-    # 12 nodes
-    # self.assertEqual(551, len(out))
-    out = GraphGenerator.generate_non_isomorphic_graphs(out)
-    # 13 nodes
-    # self.assertEqual(1301, len(out))
-    out = GraphGenerator.generate_non_isomorphic_graphs(out)
-    # 14 nodes
-    # # self.assertEqual(3159, len(out))
-    # # out = GraphGenerator.generate_non_isomorphic_graphs(out)
-    # # # 15 nodes
-    # # self.assertEqual(7741, len(out))
-    print('Duration: ', datetime.datetime.now() - start)
-    # print(len(out))
-
-    # =================================================
-    # g = GraphGenerator.generate_star(10)
-    # print(g.degree__number_of_leaves_as_nth_child_sequence(1))
-
-    # =================================================
-
-
-
+    # # self.assertEqual(47, len(out))
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # # 10 nodes
+    # # self.assertEqual(106, len(out))
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # # 11 nodes
+    # # self.assertEqual(235, len(out))
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # # 12 nodes
+    # # self.assertEqual(551, len(out))
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # # 13 nodes
+    # # self.assertEqual(1301, len(out))
+    # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # # 14 nodes
+    # # # self.assertEqual(3159, len(out))
+    # # # out = GraphGenerator.generate_non_isomorphic_graphs(out)
+    # # # # 15 nodes
+    # # # self.assertEqual(7741, len(out))
+    # print('Duration: ', datetime.datetime.now() - start)

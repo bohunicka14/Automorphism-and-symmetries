@@ -2,6 +2,7 @@ from graph import *
 from graph_generator import *
 import matplotlib.pyplot as plt
 
+
 def run():
     x = []
     y = []
@@ -22,7 +23,6 @@ def run():
     ax.set_ylabel('time [s]')
     # plt.scatter(x, y)
     plt.show()
-
 
 
 if __name__ == '__main__':

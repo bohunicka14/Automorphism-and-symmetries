@@ -7,17 +7,17 @@ import nautyRunner
 from graph_generator import *
 import csv
 
-RESULTS_FOLDER1 = 'results_joining_by_edge_linux'
-RESULTS_FOLDER2 = 'results_joining_by_node_linux'
-RESULTS_FOLDER3 = 'results_non_iterative_joining_by_edge_linux'
-RESULTS_FOLDER4 = 'results_non_iterative_joining_by_node_linux'
+RESULTS_FOLDER1 = 'results_joining_by_edge'
+RESULTS_FOLDER2 = 'results_joining_by_node'
+RESULTS_FOLDER3 = 'results_non_iterative_joining_by_edge'
+RESULTS_FOLDER4 = 'results_non_iterative_joining_by_node'
 RESULTS_FILE = 'results.csv'
 
 class TestAutomorphismGroupsInResultFile(unittest.TestCase):
 
     def test(self):
         for folder in [RESULTS_FOLDER1, RESULTS_FOLDER2, RESULTS_FOLDER3, RESULTS_FOLDER4]:
-            print(folder)
+            # print(folder)
             with open(folder + '/' + RESULTS_FILE, newline='') as csvfile:
                 table = csv.reader(csvfile, delimiter=';')
                 for row in table:
@@ -26,7 +26,7 @@ class TestAutomorphismGroupsInResultFile(unittest.TestCase):
                         direct_product = row[8] # (5 6),(3 4),(2 3) = S_2 x S_3
                         direct_product = direct_product.split('=')[1]
                         direct_product = direct_product.strip()
-                        print(direct_product, row[11])
+                        # print(direct_product, row[11])
                         result = 1
                         for item in direct_product.split('x'):
                             item = item.strip()
@@ -208,44 +208,3 @@ class TestNumberOfAutomorphisms(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
-    # 4 vertices graphs
-    # g1 = Graph()
-    # g2 = Graph()
-    #
-    # g1.insert_edge(0, 0, 1)
-    # g1.insert_edge(0, 1, 2)
-    # g1.insert_edge(0, 2, 3)
-    #
-    # g2.insert_edge(0, 0, 1)
-    # g2.insert_edge(0, 0, 2)
-    # g2.insert_edge(0, 0, 3)
-
-    # path = GraphGenerator.generate_path(4)
-    # star = GraphGenerator.generate_star(4)
-    # out = GraphGenerator.generate_isomorphic_graphs([path, star])
-    # # # for g in out:
-    # # #     print(g.leaf_sequence())
-    # # print(len(out))
-    # # print('5 vrcholove:')
-    # # for g in out:
-    # #     print(g)
-    # out = GraphGenerator.generate_isomorphic_graphs(out)
-    #
-    # # print('6 vrcholove')
-    # # for g in out:
-    # #     print(g)
-    # # print(len(out))
-    # #
-    # out = GraphGenerator.generate_isomorphic_graphs(out)
-    #
-    # for i in range(5):
-    #     out = GraphGenerator.generate_isomorphic_graphs(out)
-    #     print(len(out))
-    #
-    # for g in out:
-    #     g.draw()
-    # #
-    # # out = GraphGenerator.generate_isomorphic_graphs(out)
-    # # print(len(out))

@@ -3,7 +3,7 @@ import os, shutil, csv, datetime
 import nautyRunner
 import time
 
-FOLDER = r'./results_non_iterative_joining_by_edge_linux'
+FOLDER = r'./results_non_iterative_joining_by_edge'
 FULL_CSV_PATH = FOLDER + '/results.csv'
 CREATE_IMAGES = True
 
@@ -239,7 +239,7 @@ class UseCase:
                         elif sys.platform == 'linux':
                             all_graphs[i].serialize_to_nauty_format()
                             nautyRunner.nauty_dre_to_dot(new_folder + '/first.dot')
-                            time.sleep(0.3)
+                            time.sleep(0.8)
                             all_graphs[j].serialize_to_nauty_format()
                             nautyRunner.nauty_dre_to_dot(new_folder + '/second.dot')
 
@@ -340,11 +340,4 @@ if __name__ == '__main__':
     trees = UseCase.generate_list_of_random_different_trees()
     UseCase.generate_graphs_iteratively_by_joining(trees, False)
 
-    # star2 = GraphGenerator.generate_star(5)
-    # joined = GraphGenerator.join_graphs_by_edge(star, star2, star.nodes[0], star2.nodes[0])
-    # joined.serialize_to_nauty_format()
-    # result_joined = nautyRunner.nauty_get_aut_group()
-    # print("Aut group: \n", result_joined)
-    # nautyRunner.nauty_dre_to_dot('star.dot')
     print('Duration: ', datetime.datetime.now() - start)
-    # # result = UseCase.join_2_simple_graphs2()
